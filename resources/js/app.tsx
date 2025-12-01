@@ -1,3 +1,5 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.min.js';
 import '../css/app.css';
 
 import { createInertiaApp } from '@inertiajs/react';
@@ -25,7 +27,7 @@ createInertiaApp({
         );
     },
     progress: {
-        color: '#4B5563',
+        color: '#f4b400',
     },
 });
 
