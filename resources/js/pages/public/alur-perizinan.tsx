@@ -1,3 +1,4 @@
+import { home, login } from '@/routes';
 import { Head, router } from '@inertiajs/react';
 import React, { useState } from 'react';
 import {
@@ -182,7 +183,7 @@ export default function AlurPerizinan() {
 
         // Jika modal dibuka otomatis dari Landing Page (via URL), kembalikan ke Home saat ditutup
         if (isDirectAccess) {
-            router.visit('/');
+            router.visit(home());
         }
     };
 
@@ -199,7 +200,7 @@ export default function AlurPerizinan() {
                     <Button
                         variant="outline-secondary"
                         size="sm"
-                        onClick={() => router.visit('/')}
+                        onClick={() => router.visit(home())}
                     >
                         Kembali
                     </Button>
@@ -271,7 +272,7 @@ export default function AlurPerizinan() {
 
                     <Button
                         variant="success"
-                        onClick={() => router.visit('/login')}
+                        onClick={() => router.visit(login())}
                     >
                         Ajukan Permohonan
                     </Button>

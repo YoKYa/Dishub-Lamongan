@@ -20,6 +20,11 @@ class CreateNewUser implements CreatesNewUsers
     {
         Validator::make($input, [
             'name' => ['required', 'string', 'max:255'],
+            'identity_number'=>['string','min:15','max:16', Rule::unique(User::class),],
+            'phone'=>['required','string','max:13','min:10'],
+            'address'=>['required','string','max:255'],
+            'file_identity'=>['max:2048'],
+            'skpj'=>['max:2048'],
             'email' => [
                 'required',
                 'string',
@@ -29,11 +34,27 @@ class CreateNewUser implements CreatesNewUsers
             ],
             'password' => $this->passwordRules(),
         ])->validate();
-
-        return User::create([
-            'name' => $input['name'],
-            'email' => $input['email'],
-            'password' => $input['password'],
-        ]);
+            
+        try {
+            $user = User::create([
+                'name' => $input['name'],
+                'identity_number' => $input['identity_number'],
+                'phone' => $input['phone'],
+                'address' => $input['address'],
+                'role' => $input['role'],
+                'email' => $input['email'],
+                'password' => $input['password'],
+            ]);
+            $file = $input['file_identity']->store('documents/user/file_identity','public');
+            $file2 = $input['skpj']->store('documents/user/skpj','public');
+            $user->applicant()->create([
+                'file_identity' => $file,
+                'skpj' => $file2,
+            ]);
+            return $user;
+        } catch (\Exception $e) {
+            return throw new \RuntimeException('Failed to create user: ' . $e->getMessage());
+        }
+        
     }
 }

@@ -1,15 +1,22 @@
-import InputError from '@/components/input-error';
-import TextLink from '@/components/text-link';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
-import AuthLayout from '@/layouts/auth-layout';
+import { Head, Link } from '@inertiajs/react';
+// Import logika routing dari login2
 import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
-import { Form, Head } from '@inertiajs/react';
+// Import Form helper dari Inertia
+import { Form } from '@inertiajs/react';
+
+import {
+    Button,
+    Card,
+    Col,
+    Container,
+    Form as BootstrapForm, // Alias untuk menghindari bentrok nama dengan Form Inertia
+    InputGroup,
+    Row,
+    Spinner, // Tambahan untuk loading state
+} from 'react-bootstrap';
+import { FaEnvelope, FaLock } from 'react-icons/fa';
 
 interface LoginProps {
     status?: string;
@@ -23,98 +30,152 @@ export default function Login({
     canRegister,
 }: LoginProps) {
     return (
-        <AuthLayout
-            title="Log in to your account"
-            description="Enter your email and password below to log in"
-        >
-            <Head title="Log in" />
+        <div className="bg-light min-vh-100 d-flex align-items-center py-5">
+            <Head title="Login Pengguna" />
 
-            <Form
-                {...store.form()}
-                resetOnSuccess={['password']}
-                className="flex flex-col gap-6"
-            >
-                {({ processing, errors }) => (
-                    <>
-                        <div className="grid gap-6">
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    name="email"
-                                    required
-                                    autoFocus
-                                    tabIndex={1}
-                                    autoComplete="email"
-                                    placeholder="email@example.com"
-                                />
-                                <InputError message={errors.email} />
-                            </div>
-
-                            <div className="grid gap-2">
-                                <div className="flex items-center">
-                                    <Label htmlFor="password">Password</Label>
-                                    {canResetPassword && (
-                                        <TextLink
-                                            href={request()}
-                                            className="ml-auto text-sm"
-                                            tabIndex={5}
-                                        >
-                                            Forgot password?
-                                        </TextLink>
-                                    )}
+            <Container>
+                <Row className="justify-content-center">
+                    <Col md={6} lg={5}>
+                        <Card className="shadow-lg rounded-4 border-0">
+                            <Card.Body className="p-5">
+                                <div className="mb-4 text-center">
+                                    <h3 className="fw-bold text-dark">
+                                        Selamat Datang
+                                    </h3>
+                                    <p className="text-muted small">
+                                        Silakan masuk untuk mengakses layanan
+                                        perizinan
+                                    </p>
                                 </div>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    name="password"
-                                    required
-                                    tabIndex={2}
-                                    autoComplete="current-password"
-                                    placeholder="Password"
-                                />
-                                <InputError message={errors.password} />
-                            </div>
 
-                            <div className="flex items-center space-x-3">
-                                <Checkbox
-                                    id="remember"
-                                    name="remember"
-                                    tabIndex={3}
-                                />
-                                <Label htmlFor="remember">Remember me</Label>
-                            </div>
+                                {/* Menggunakan Form Wrapper dari Inertia/Login2 */}
+                                <Form
+                                    {...store.form()}
+                                    resetOnSuccess={['password']}
+                                >
+                                    {({ processing, errors }) => (
+                                        <>
+                                            <BootstrapForm.Group className="mb-3">
+                                                <BootstrapForm.Label className="small text-muted fw-bold">
+                                                    Email
+                                                </BootstrapForm.Label>
+                                                <InputGroup>
+                                                    <InputGroup.Text className="bg-white text-muted border-end-0">
+                                                        <FaEnvelope />
+                                                    </InputGroup.Text>
+                                                    <BootstrapForm.Control
+                                                        type="email"
+                                                        name="email"
+                                                        id="email"
+                                                        placeholder="name@example.com"
+                                                        className={`border-start-0 ${errors.email ? 'is-invalid' : ''}`}
+                                                        required
+                                                        autoFocus
+                                                        autoComplete="email"
+                                                    />
+                                                </InputGroup>
+                                                {/* Tampilkan Error Email */}
+                                                {errors.email && (
+                                                    <div className="text-danger small mt-1">
+                                                        {errors.email}
+                                                    </div>
+                                                )}
+                                            </BootstrapForm.Group>
 
-                            <Button
-                                type="submit"
-                                className="mt-4 w-full"
-                                tabIndex={4}
-                                disabled={processing}
-                                data-test="login-button"
-                            >
-                                {processing && <Spinner />}
-                                Log in
-                            </Button>
-                        </div>
+                                            <BootstrapForm.Group className="mb-3">
+                                                <BootstrapForm.Label className="small text-muted fw-bold">
+                                                    Password
+                                                </BootstrapForm.Label>
+                                                <InputGroup>
+                                                    <InputGroup.Text className="bg-white text-muted border-end-0">
+                                                        <FaLock />
+                                                    </InputGroup.Text>
+                                                    <BootstrapForm.Control
+                                                        type="password"
+                                                        name="password"
+                                                        id="password"
+                                                        placeholder="Masukkan password"
+                                                        className={`border-start-0 ${errors.password ? 'is-invalid' : ''}`}
+                                                        required
+                                                        autoComplete="current-password"
+                                                    />
+                                                </InputGroup>
+                                                {/* Tampilkan Error Password */}
+                                                {errors.password && (
+                                                    <div className="text-danger small mt-1">
+                                                        {errors.password}
+                                                    </div>
+                                                )}
+                                            </BootstrapForm.Group>
 
-                        {canRegister && (
-                            <div className="text-center text-sm text-muted-foreground">
-                                Don't have an account?{' '}
-                                <TextLink href={register()} tabIndex={5}>
-                                    Sign up
-                                </TextLink>
-                            </div>
-                        )}
-                    </>
-                )}
-            </Form>
+                                            <div className="d-flex justify-content-between align-items-center mb-4">
+                                                <BootstrapForm.Check
+                                                    type="checkbox"
+                                                    label="Ingat Saya"
+                                                    id="remember"
+                                                    name="remember"
+                                                    className="small text-muted"
+                                                />
+                                                {canResetPassword && (
+                                                    <Link
+                                                        href={request()}
+                                                        className="text-decoration-none small fw-bold text-primary"
+                                                    >
+                                                        Lupa Password?
+                                                    </Link>
+                                                )}
+                                            </div>
 
-            {status && (
-                <div className="mb-4 text-center text-sm font-medium text-green-600">
-                    {status}
-                </div>
-            )}
-        </AuthLayout>
+                                            <Button
+                                                variant="success"
+                                                size="lg"
+                                                type="submit"
+                                                className="w-100 fw-bold shadow-sm mb-4"
+                                                disabled={processing}
+                                            >
+                                                {processing ? (
+                                                    <>
+                                                        <Spinner
+                                                            as="span"
+                                                            animation="border"
+                                                            size="sm"
+                                                            role="status"
+                                                            aria-hidden="true"
+                                                            className="me-2"
+                                                        />
+                                                        Memproses...
+                                                    </>
+                                                ) : (
+                                                    'Masuk'
+                                                )}
+                                            </Button>
+
+                                            {canRegister && (
+                                                <div className="text-muted text-center">
+                                                    Belum punya akun?{' '}
+                                                    <Link
+                                                        href={register()}
+                                                        className="text-decoration-none fw-bold"
+                                                    >
+                                                        Daftar disini
+                                                    </Link>
+                                                </div>
+                                            )}
+                                        </>
+                                    )}
+                                </Form>
+                                
+                                {/* Status Message jika ada flash message */}
+                                {status && (
+                                    <div className="mt-3 text-center text-sm font-medium text-success">
+                                        {status}
+                                    </div>
+                                )}
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
+            </Container>
+        </div>
     );
 }

@@ -1,4 +1,6 @@
-import { Head, Link, router } from '@inertiajs/react'; // Import Inertia V2
+import { home, login, register } from '@/routes';
+import { type SharedData } from '@/types';
+import { Head, Link, router, usePage } from '@inertiajs/react'; // Import Inertia V2
 import {
     Button,
     Card,
@@ -21,6 +23,7 @@ import {
 } from 'react-icons/fa';
 
 export default function Welcome() {
+    const { auth } = usePage<SharedData>().props;
     // ID jenis izin
     const layananList = [
         { id: 1, name: 'Izin Trayek Angkutan Umum', icon: <FaBus /> },
@@ -35,7 +38,7 @@ export default function Welcome() {
     const handleLayananClick = (id: number) => {
         // Menggunakan router.get (Inertia V2)
         // Data dikirim sebagai Query Params: /alur-perizinan?selectedId=1
-        router.get('/alur-perizinan', { selectedId: id });
+        router.get('alur-perizinan', { selectedId: id });
     };
 
     return (
@@ -52,7 +55,7 @@ export default function Welcome() {
                 <Container>
                     {/* Ganti Navbar.Brand dengan Link Inertia untuk SPA feeling */}
                     <Link
-                        href="/"
+                        href={home()}
                         className="d-flex align-items-center gap-3 navbar-brand"
                     >
                         <img
@@ -106,22 +109,34 @@ export default function Welcome() {
                                 Cek Permohonan
                             </Nav.Link>
                         </Nav>
-                        <div className="d-flex gap-2 mt-3 mt-lg-0">
-                            <Button
-                                variant="primary"
-                                className="px-4 fw-bold"
-                                onClick={() => router.get('/login')}
-                            >
-                                Masuk
-                            </Button>
-                            <Button
-                                variant="outline-primary"
-                                className="px-4 fw-bold"
-                                onClick={() => router.get('/register')}
-                            >
-                                Daftar
-                            </Button>
-                        </div>
+                        {auth.user ? (
+                            <div className="d-flex gap-2 mt-3 mt-lg-0">
+                                <Button
+                                    variant="outline-primary"
+                                    className="px-4 fw-bold"
+                                    onClick={() => router.get('/dashboard')}
+                                >
+                                    Dashboard
+                                </Button>
+                            </div>
+                        ) : (
+                            <div className="d-flex gap-2 mt-3 mt-lg-0">
+                                <Button
+                                        variant="primary"
+                                        className="px-4 fw-bold"
+                                        onClick={() => router.get(login())}
+                                    >
+                                        Masuk
+                                    </Button>
+                                    <Button
+                                        variant="outline-primary"
+                                        className="px-4 fw-bold"
+                                        onClick={() => router.get(register())}
+                                    >
+                                        Daftar
+                                    </Button>
+                            </div>
+                        )}
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
