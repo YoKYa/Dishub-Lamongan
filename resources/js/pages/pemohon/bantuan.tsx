@@ -1,19 +1,18 @@
-import React from 'react';
 import { Container, Card, Button, Row, Col } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { router, Head } from '@inertiajs/react';
 import { FaArrowLeft, FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaWhatsapp } from 'react-icons/fa';
 
-const Bantuan = () => {
-  const navigate = useNavigate();
-
+export default function Bantuan() {
   return (
     <Container className="py-5">
+      <Head title="Pusat Bantuan" />
+
       {/* Header */}
       <div className="d-flex align-items-center mb-4">
         <Button 
             variant="light" 
             className="me-3 shadow-sm rounded-circle p-0 d-flex align-items-center justify-content-center" 
-            onClick={() => navigate('/dashboard-pemohon')}
+            onClick={() => router.visit('/dashboard')}
             style={{ width: '40px', height: '40px' }}
         >
         <FaArrowLeft />
@@ -82,5 +81,3 @@ const Bantuan = () => {
     </Container>
   );
 };
-
-export default Bantuan;
