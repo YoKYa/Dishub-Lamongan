@@ -20,7 +20,7 @@ import {
     FaWarehouse,
 } from 'react-icons/fa';
 
-const LandingPage = () => {
+export default function Welcome() {
     // ID jenis izin
     const layananList = [
         { id: 1, name: 'Izin Trayek Angkutan Umum', icon: <FaBus /> },
@@ -350,6 +350,4 @@ const LandingPage = () => {
             </footer>
         </>
     );
-};
-
-export default LandingPage;
+}

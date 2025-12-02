@@ -2,13 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Laravel\Fortify\Features;
 
-Route::get('/', function () {
-    return Inertia::render('public/landing-page', [
-        'canRegister' => Features::enabled(Features::registration()),
-    ]);
-})->name('home');
+Route::inertia('/', 'public/welcome')->name('home');
+Route::inertia('/alur-perizinan', 'public/alur-perizinan')->name('alur-perizinan');
+Route::inertia('/cek-permohonan', 'public/cek-permohonan')->name('cek-permohonan');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
