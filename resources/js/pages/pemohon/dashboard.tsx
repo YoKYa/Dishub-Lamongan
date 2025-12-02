@@ -1,4 +1,4 @@
-import { logout } from '@/routes';
+import { dashboard, logout, profile } from '@/routes';
 import { type SharedData } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
@@ -36,7 +36,7 @@ export default function Dashboard() {
         {
             title: 'Profil Saya',
             icon: <FaUser size={40} />,
-            link: '/profil',
+            link: '/profile',
             color: 'primary',
             desc: 'Kelola data diri dan akun',
         },
@@ -79,17 +79,6 @@ export default function Dashboard() {
 
     const handleLogoutClick = () => setShowLogoutModal(true);
 
-    const confirmLogout = () => {
-        // Hapus sesi simulasi
-        localStorage.removeItem('user');
-
-        // Jika menggunakan backend Laravel Authentication:
-        // router.post('/logout');
-
-        // Untuk simulasi navigasi:
-        router.visit('/');
-    };
-
     return (
         <div className="min-vh-100 bg-light d-flex flex-column">
             <Head title="Dashboard Pemohon" />
@@ -98,7 +87,7 @@ export default function Dashboard() {
             <Navbar bg="white" className="shadow-sm px-4 py-3 sticky-top">
                 <Container>
                     <Link
-                        href="/dashboard-pemohon"
+                        href={dashboard()}
                         className="navbar-brand d-flex align-items-center gap-3"
                     >
                         <img
@@ -149,7 +138,14 @@ export default function Dashboard() {
                                 className="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center"
                                 style={{ width: 40, height: 40 }}
                             >
-                                <FaUser />
+                                {auth.user.photo_profile ? (
+                                    <img
+                                        className="rounded-circle"
+                                        src={String(auth.user.photo_profile)} width={40} height={40}/>
+                                    ) : (
+                                        <FaUser />
+                                    )}
+                                
                             </div>
                         </Dropdown.Toggle>
 
@@ -158,7 +154,7 @@ export default function Dashboard() {
                             style={{ minWidth: '200px' }}
                         >
                             <Dropdown.Item
-                                onClick={() => router.visit('/profil')}
+                                onClick={() => router.visit(profile())}
                                 className="d-flex align-items-center gap-2 rounded py-2"
                             >
                                 <FaUserEdit className="text-muted" /> Lihat

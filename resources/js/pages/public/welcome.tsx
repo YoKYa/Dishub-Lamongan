@@ -1,4 +1,4 @@
-import { home, login, register, logout } from '@/routes';
+import { home, login, register} from '@/routes';
 import { type SharedData } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react'; // Import Inertia V2
 import {
