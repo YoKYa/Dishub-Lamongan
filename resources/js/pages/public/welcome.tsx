@@ -1,4 +1,4 @@
-import { home, login, register } from '@/routes';
+import { home, login, register, logout } from '@/routes';
 import { type SharedData } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react'; // Import Inertia V2
 import {
@@ -122,19 +122,19 @@ export default function Welcome() {
                         ) : (
                             <div className="d-flex gap-2 mt-3 mt-lg-0">
                                 <Button
-                                        variant="primary"
-                                        className="px-4 fw-bold"
-                                        onClick={() => router.get(login())}
-                                    >
-                                        Masuk
-                                    </Button>
-                                    <Button
-                                        variant="outline-primary"
-                                        className="px-4 fw-bold"
-                                        onClick={() => router.get(register())}
-                                    >
-                                        Daftar
-                                    </Button>
+                                    variant="primary"
+                                    className="px-4 fw-bold"
+                                    onClick={() => router.get(login())}
+                                >
+                                    Masuk
+                                </Button>
+                                <Button
+                                    variant="outline-primary"
+                                    className="px-4 fw-bold"
+                                    onClick={() => router.get(register())}
+                                >
+                                    Daftar
+                                </Button>
                             </div>
                         )}
                     </Navbar.Collapse>
