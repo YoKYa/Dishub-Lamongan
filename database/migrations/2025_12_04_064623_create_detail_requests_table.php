@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('type_applicants', function (Blueprint $table) {
+        Schema::create('detail_requests', function (Blueprint $table) {
             $table->id();
-            $table->string('nama_izin');
-            $table->text('deskripsi')->nullable();
-            $table->string('syarat_dokumen');
+            $table->foreignId('request_id')->constrained('requests')->onDelete('cascade');
+            $table->string('field_name');
+            $table->text('field_value');
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('type_applicants');
+        Schema::dropIfExists('detail_requests');
     }
 };

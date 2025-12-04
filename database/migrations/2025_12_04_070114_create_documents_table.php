@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('applicant_id')->constrained('applicants')->onDelete('cascade');
+            $table->foreignId('request_id')->constrained('requests')->onDelete('cascade');
             $table->string('nama_dokumen');
             $table->string('path_dokumen');
             $table->timestamps();

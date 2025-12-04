@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\TypeApplicant;
+use App\Models\TypeRequest;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class TypeApplicantSeeder extends Seeder
+class TypeRequestSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -49,6 +49,6 @@ class TypeApplicantSeeder extends Seeder
                 'syarat_dokumen' => 'Proposal Lokasi, Denah Lahan Parkir, NPWP, Surat Rekomendasi Dishub',
             ],
             ];
-        TypeApplicant::insert($data);
+        TypeRequest::insert($data);
     }
 }

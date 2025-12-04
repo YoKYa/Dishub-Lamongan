@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('detail_applicants', function (Blueprint $table) {
+        Schema::create('requests', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('applicant_id')->constrained('applicants')->onDelete('cascade');
-            $table->string('field_name');
-            $table->text('field_value');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('type_request_id')->constrained('type_requests')->onDelete('cascade');
+            $table->string('status')->default('pending');
+            $table->text('catatan')->nullable();
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('detail_applicants');
+        Schema::dropIfExists('requests');
     }
 };

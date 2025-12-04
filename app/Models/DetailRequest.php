@@ -4,15 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class DetailApplicant extends Model
+class DetailRequest extends Model
 {
     protected $fillable = [
-        'applicant_id',
+        'request_id',
         'field_name',
         'field_value',
     ];
-    public function applicant()
+    public function request()
     {
-        return $this->belongsTo(Applicant::class, 'applicant_id');
+        return $this->belongsTo(Request::class, 'request_id');
     }
 }

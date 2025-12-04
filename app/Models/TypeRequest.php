@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class TypeApplicant extends Model
+class TypeRequest extends Model
 {
     protected $fillable = [
         'nama_izin',
@@ -13,6 +13,6 @@ class TypeApplicant extends Model
     ];
     public function applicants()
     {
-        return $this->hasMany(Applicant::class, 'applicant_id');
+        return $this->hasMany(Request::class, 'request_id');
     }
 }
