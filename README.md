@@ -6,14 +6,14 @@ Repositori: [https://github.com/YoKYa/Dishub-Lamongan](https://github.com/YoKYa/
 
 ## 📋 Daftar Isi
 
--   [Tentang Aplikasi](#tentang-aplikasi)
--   [Fitur Utama](#fitur-utama)
--   [Teknologi](#teknologi)
--   [Prasyarat](#prasyarat)
--   [Instalasi](#instalasi)
--   [Penggunaan](#penggunaan)
--   [Kontribusi](#kontribusi)
--   [Lisensi](#lisensi)
+- [Tentang Aplikasi](#tentang-aplikasi)
+- [Fitur Utama](#fitur-utama)
+- [Teknologi](#teknologi)
+- [Prasyarat](#prasyarat)
+- [Instalasi](#instalasi)
+- [Penggunaan](#penggunaan)
+- [Kontribusi](#kontribusi)
+- [Lisensi](#lisensi)
 
 ## 📖 Tentang Aplikasi
 
@@ -21,26 +21,26 @@ Aplikasi ini bertujuan untuk mendigitalisasi layanan birokrasi di Dishub Lamonga
 
 ## ✨ Fitur Utama
 
--   **Pendaftaran & Autentikasi Pengguna:** Login aman untuk pemohon dan admin.
--   **Pengajuan Izin Online:**
-    -   Izin Trayek Angkutan.
-    -   Izin ANDALALIN (Analisis Dampak Lalu Lintas).
-    -   Izin Operasi Angkutan Sewa/Pariwisata.
--   **Dashboard Pemohon:** Memantau status pengajuan izin secara _real-time_ (Menunggu Verifikasi, Disetujui, Ditolak).
--   **Upload Dokumen:** Fitur unggah berkas persyaratan (KTP, STNK, KIR, dll).
--   **Verifikasi Berkas (Admin):** Validasi dokumen yang masuk oleh petugas.
--   **Cetak Izin Digital:** Pembuatan surat izin otomatis dalam format PDF dengan QR Code.
--   **Laporan & Statistik:** Rekapitulasi data perizinan.
+- **Pendaftaran & Autentikasi Pengguna:** Login aman untuk pemohon dan admin.
+- **Pengajuan Izin Online:**
+    - Izin Trayek Angkutan.
+    - Izin ANDALALIN (Analisis Dampak Lalu Lintas).
+    - Izin Operasi Angkutan Sewa/Pariwisata.
+- **Dashboard Pemohon:** Memantau status pengajuan izin secara _real-time_ (Menunggu Verifikasi, Disetujui, Ditolak).
+- **Upload Dokumen:** Fitur unggah berkas persyaratan (KTP, STNK, KIR, dll).
+- **Verifikasi Berkas (Admin):** Validasi dokumen yang masuk oleh petugas.
+- **Cetak Izin Digital:** Pembuatan surat izin otomatis dalam format PDF dengan QR Code.
+- **Laporan & Statistik:** Rekapitulasi data perizinan.
 
 ## 🛠 Teknologi
 
 Aplikasi ini dibangun menggunakan teknologi berikut:
 
--   **Bahasa Pemrograman:** [PHP]
--   **Framework:** [Laravel]
--   **Database:** [MySQL/PostgreSQL]
--   **Frontend:** [Bootstrap]
--   **Server:** [Apache]
+- **Bahasa Pemrograman:** [PHP]
+- **Framework:** [Laravel]
+- **Database:** [MySQL/PostgreSQL]
+- **Frontend:** [Bootstrap]
+- **Server:** [Apache]
 
 ## ⚙️ Prasyarat
 
@@ -92,14 +92,19 @@ Ikuti langkah-langkah di bawah ini untuk menjalankan proyek di lingkungan lokal 
     php artisan key:generate
     ```
 
-5.  **Migrasi Database**
+5.  **Link Storage** (Penting untuk akses file upload)
+    Buat symlink dari folder `storage` ke `public` agar dokumen persyaratan bisa diakses:
+    ```bash
+    php artisan storage:link
+    ```
+6.  **Migrasi Database**
     Impor file SQL yang tersedia di folder `database/` atau jalankan migrasi:
 
     ```bash
     php artisan migrate --seed
     ```
 
-6.  **Jalankan Server**
+7.  **Jalankan Server**
     ```bash
     npm run dev
     # atau akses melalui http://dishub-lamongan.test
@@ -109,10 +114,10 @@ Ikuti langkah-langkah di bawah ini untuk menjalankan proyek di lingkungan lokal 
 
 1.  Buka browser dan akses alamat lokal proyek.
 2.  **Akun Demo (Default):**
-    -   **Admin:**
-        -   Ganti Role ke `admin`
-    -   **User:**
-        -   Dapat melakukan registrasi mandiri di halaman utama.
+    - **Admin:**
+        - Ganti Role ke `admin`
+    - **User:**
+        - Dapat melakukan registrasi mandiri di halaman utama.
 
 ## 🤝 Kontribusi
 
