@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Card, Button, ListGroup, Modal, Form, Alert } from 'react-bootstrap';
-import { useNavigate, useParams } from 'react-router-dom';
+import { router, Head } from '@inertiajs/react';
 import { FaArrowLeft, FaUser, FaCar, FaFilePdf, FaCheckCircle, FaTimesCircle, FaHistory } from 'react-icons/fa';
 
-const VerifikasiDetail = () => {
-  const navigate = useNavigate();
-  const { id } = useParams();
-
+const VerifikasiDetail = ({ id }) => {
+  // Catatan: 'id' diterima sebagai prop dari Route Laravel.
+  
   // State untuk Modal
   const [showApproveModal, setShowApproveModal] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [alasanTolak, setAlasanTolak] = useState("");
 
-  // Data Dummy 
+  // Data Dummy (Idealnya data ini dikirim dari controller sebagai props)
   const data = {
     reg: "REG-2025-001",
     jenis: "Izin Trayek Angkutan Umum",
@@ -28,22 +27,29 @@ const VerifikasiDetail = () => {
   // LOGIKA APPROVE 
   const handleApprove = () => {
     // Simulasi API call approve
+    // router.post(`/admin/verifikasi/${id}/approve`);
+    
     setShowApproveModal(false);
     alert("Pengajuan DISETUJUI! Surat Izin Digital telah diterbitkan.");
-    navigate('/dashboard-admin');
+    router.visit('/dashboard-admin');
   };
 
   // LOGIKA TOLAK 
   const handleReject = () => {
     if(!alasanTolak) return alert("Mohon isi alasan penolakan!");
+    
     // Simulasi API call reject
+    // router.post(`/admin/verifikasi/${id}/reject`, { alasan: alasanTolak });
+
     setShowRejectModal(false);
     alert("Pengajuan DITOLAK. Notifikasi dikirim ke pemohon.");
-    navigate('/dashboard-admin');
+    router.visit('/dashboard-admin');
   };
 
   return (
     <div className="bg-light min-vh-100 py-4">
+      <Head title={`Verifikasi - ${data.reg}`} />
+
       <Container>
         {/* Header */}
         <div className="d-flex justify-content-between align-items-center mb-4">
@@ -51,7 +57,7 @@ const VerifikasiDetail = () => {
                 <Button 
                     variant="light" 
                     className="me-3 shadow-sm rounded-circle p-0 d-flex align-items-center justify-content-center" 
-                    onClick={() => navigate('/admin/verifikasi')}
+                    onClick={() => router.visit('/admin/verifikasi')}
                     style={{ width: '40px', height: '40px' }} 
                 >
                 <FaArrowLeft />

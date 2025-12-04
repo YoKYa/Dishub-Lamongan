@@ -1,12 +1,10 @@
 import React from 'react';
 import { Container, Card, Table, Badge, Button, Form, InputGroup } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { router, Head } from '@inertiajs/react';
 import { FaSearch, FaFilter, FaEye, FaArrowLeft } from 'react-icons/fa';
 
 const VerifikasiList = () => {
-  const navigate = useNavigate();
-
-  // Data Dummy Antrian
+  // Data Dummy Antrian (Nanti bisa diganti dengan props dari backend)
   const antrian = [
     { id: 1, reg: "REG-2025-001", pemohon: "Budi Santoso", jenis: "Izin Trayek Angkutan Umum", tgl: "20 Okt 2025" },
     { id: 2, reg: "REG-2025-005", pemohon: "PT. Trans Jaya", jenis: "Izin Angkutan Pariwisata", tgl: "21 Okt 2025" },
@@ -15,12 +13,14 @@ const VerifikasiList = () => {
 
   return (
     <div className="bg-light min-vh-100 py-4">
+      <Head title="Verifikasi Permohonan" />
+
       <Container>
         <div className="d-flex align-items-center mb-4">
             <Button 
                 variant="light" 
                 className="me-3 shadow-sm rounded-circle p-0 d-flex align-items-center justify-content-center" 
-                onClick={() => navigate('/dashboard-admin')}
+                onClick={() => router.visit('/dashboard-admin')}
                 style={{ width: '40px', height: '40px' }} 
             >
             <FaArrowLeft />
@@ -71,7 +71,7 @@ const VerifikasiList = () => {
                                         variant="primary" 
                                         size="sm" 
                                         className="fw-bold shadow-sm"
-                                        onClick={() => navigate(`/admin/verifikasi/${item.id}`)}
+                                        onClick={() => router.visit(`/admin/verifikasi/${item.id}`)}
                                     >
                                         <FaEye className="me-1"/> Periksa
                                     </Button>

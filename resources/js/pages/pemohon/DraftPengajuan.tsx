@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { Container, Card, Table, Button, Alert, Modal } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { router, Head } from '@inertiajs/react';
 import { FaArrowLeft, FaEdit, FaTrash, FaExclamationTriangle } from 'react-icons/fa';
 
 const DraftPengajuan = () => {
-  const navigate = useNavigate();
-
-  // Data Draft
+  // Data Draft (Nanti bisa diganti dengan props dari backend Laravel)
   const [drafts, setDrafts] = useState([
     { 
       id: 1, 
@@ -23,33 +21,42 @@ const DraftPengajuan = () => {
   ]);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [draftToDelete, setDraftToDelete] = useState(null);
+  const [draftToDelete, setDraftToDelete] = useState<number | null>(null);
 
-  const initiateDelete = (id) => {
+  const initiateDelete = (id: number) => {
     setDraftToDelete(id);
     setShowDeleteModal(true);
   };
 
   const confirmDelete = () => {
+    // Logika hapus (frontend simulation)
     const sisaDraft = drafts.filter(item => item.id !== draftToDelete);
     setDrafts(sisaDraft);
+    
+    // Jika backend sudah siap, gunakan:
+    // router.delete(`/draft/${draftToDelete}`);
+    
     setShowDeleteModal(false);
     setDraftToDelete(null);
   };
 
-  const handleLanjutIsi = (draft) => {
-    navigate('/ajukan-permohonan', { 
-      state: { preSelectedId: draft.kode } 
+  const handleLanjutIsi = (draft: { id?: number; tanggal?: string; jenis?: string; kode: unknown; }) => {
+    // Di Inertia, kirim data via Query Params untuk diambil di halaman tujuan
+    // URL hasil: /ajukan-permohonan?preSelectedId=trayek
+    router.visit(`/ajukan-permohonan?preSelectedId=${draft.kode}`, {
+      data: {}
     });
   };
 
   return (
     <Container className="py-5">
+      <Head title="Draft Pengajuan" />
+
       <div className="d-flex align-items-center mb-4">
         <Button 
           variant="light" 
           className="me-3 shadow-sm rounded-circle p-0 d-flex align-items-center justify-content-center" 
-          onClick={() => navigate('/dashboard-pemohon')}
+          onClick={() => router.visit('/dashboard-pemohon')}
           style={{ width: '40px', height: '40px' }}
         >
         <FaArrowLeft />

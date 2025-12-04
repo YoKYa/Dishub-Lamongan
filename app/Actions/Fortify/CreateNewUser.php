@@ -45,12 +45,20 @@ class CreateNewUser implements CreatesNewUsers
                 'email' => $input['email'],
                 'password' => $input['password'],
             ]);
-            $file = $input['file_identity']->store('documents/user/file_identity','public');
-            $file2 = $input['skpj']->store('documents/user/skpj','public');
-            $user->applicant()->create([
-                'file_identity' => $file,
-                'skpj' => $file2,
-            ]);
+            if ($input['role'] == 'perorangan') {
+                $file = $input['file_identity']->store('documents/user/perorangan/file_ktp','public');
+                $user->individualApplicant()->create([
+                    'file_ktp' => $file,
+                ]);
+            }elseif($input['role'] == 'perusahaan'){
+                $file = $input['file_identity']->store('documents/user/perusahaan/file_npwp','public');
+                $file2 = $input['skpj']->store('documents/user/perusahaan/file_surat_kuasa','public');
+                $user->companyApplicant()->create([
+                    'file_npwp' => $file,
+                    'file_surat_kuasa' => $file2,
+                ]);
+            }else{}
+            
             return $user;
         } catch (\Exception $e) {
             return throw new \RuntimeException('Failed to create user: ' . $e->getMessage());

@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Navbar, Nav, Button, Table, Badge } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { router, Head } from '@inertiajs/react';
 import { FaHome, FaClipboardCheck, FaFileAlt, FaUsers, FaSignOutAlt, FaChartLine, FaCheckCircle, FaClock, FaTimesCircle, FaEye, FaArrowRight, FaBars } from 'react-icons/fa';
 
 const DashboardAdmin = () => {
-  const navigate = useNavigate();
-  
   // Sidebar Default TERTUTUP
   const [showSidebar, setShowSidebar] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
@@ -21,8 +19,14 @@ const DashboardAdmin = () => {
   }, []);
 
   const handleLogout = () => {
+    // Hapus sesi lokal (Simulasi)
     localStorage.removeItem("user");
-    navigate('/admin-login');
+    
+    // Jika backend Laravel sudah siap, biasanya menggunakan:
+    // router.post('/logout');
+    
+    // Navigasi ke halaman login admin
+    router.visit('/admin-login');
   };
 
   const recentVerifications = [
@@ -35,6 +39,7 @@ const DashboardAdmin = () => {
 
   return (
     <div className="d-flex vh-100 bg-light overflow-hidden">
+        <Head title="Dashboard Admin" />
         
         {/* 1. SIDEBAR WRAPPER */}
         <div 
@@ -62,9 +67,9 @@ const DashboardAdmin = () => {
                 <hr className="border-secondary my-2 mx-3" />
                 <Nav className="flex-column gap-2 flex-grow-1 px-3">
                     <Nav.Link className="text-white bg-primary rounded shadow-sm mb-1 d-flex align-items-center gap-3 px-3 py-2"><FaHome /> Dashboard</Nav.Link>
-                    <Nav.Link onClick={() => navigate('/admin/verifikasi')} className="text-white-50 hover-text-white d-flex align-items-center gap-3 px-3 py-2" style={{cursor: 'pointer'}}><FaClipboardCheck /> Verifikasi Permohonan <span className="badge bg-danger rounded-pill ms-auto small">5</span></Nav.Link>
-                    <Nav.Link onClick={() => navigate('/admin/laporan')} className="text-white-50 hover-text-white d-flex align-items-center gap-3 px-3 py-2" style={{cursor: 'pointer'}}><FaFileAlt /> Laporan & Arsip</Nav.Link>
-                    <Nav.Link onClick={() => navigate('/admin/users')} className="text-white-50 hover-text-white d-flex align-items-center gap-3 px-3 py-2" style={{cursor: 'pointer'}}><FaUsers /> Manajemen User</Nav.Link>
+                    <Nav.Link onClick={() => router.visit('/admin/verifikasi')} className="text-white-50 hover-text-white d-flex align-items-center gap-3 px-3 py-2" style={{cursor: 'pointer'}}><FaClipboardCheck /> Verifikasi Permohonan <span className="badge bg-danger rounded-pill ms-auto small">5</span></Nav.Link>
+                    <Nav.Link onClick={() => router.visit('/admin/laporan')} className="text-white-50 hover-text-white d-flex align-items-center gap-3 px-3 py-2" style={{cursor: 'pointer'}}><FaFileAlt /> Laporan & Arsip</Nav.Link>
+                    <Nav.Link onClick={() => router.visit('/admin/users')} className="text-white-50 hover-text-white d-flex align-items-center gap-3 px-3 py-2" style={{cursor: 'pointer'}}><FaUsers /> Manajemen User</Nav.Link>
                 </Nav>
                 <div className="mt-auto px-3 pb-3">
                     <hr className="border-secondary" />
@@ -113,7 +118,7 @@ const DashboardAdmin = () => {
                 <Card className="border-0 shadow-sm rounded-4">
                     <Card.Header className="bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
                         <h6 className="fw-bold m-0 text-dark">Pengajuan Terbaru Perlu Verifikasi</h6>
-                        <Button variant="link" size="sm" className="text-decoration-none fw-bold p-0" onClick={() => navigate('/admin/verifikasi')}>Lihat Semua <FaArrowRight className="ms-1" /></Button>
+                        <Button variant="link" size="sm" className="text-decoration-none fw-bold p-0" onClick={() => router.visit('/admin/verifikasi')}>Lihat Semua <FaArrowRight className="ms-1" /></Button>
                     </Card.Header>
                     <Card.Body className="p-0">
                         <div className="table-responsive">
@@ -135,7 +140,7 @@ const DashboardAdmin = () => {
                                             <td><Badge bg="light" text="dark" className="border">{item.jenis}</Badge></td>
                                             <td className="text-center text-muted small">{item.tgl}</td>
                                             <td className="text-end pe-4">
-                                                <Button variant="outline-primary" size="sm" className="rounded-pill px-3" onClick={() => navigate(`/admin/verifikasi/${item.id}`)}><FaEye className="me-1" /> Cek</Button>
+                                                <Button variant="outline-primary" size="sm" className="rounded-pill px-3" onClick={() => router.visit(`/admin/verifikasi/${item.id}`)}><FaEye className="me-1" /> Cek</Button>
                                             </td>
                                         </tr>
                                     ))}

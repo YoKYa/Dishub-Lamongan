@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Card, Form, Button, Row, Col, Alert, Modal } from 'react-bootstrap';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { router, Head } from '@inertiajs/react';
 import { FaArrowLeft, FaUpload, FaCheckCircle, FaBus, FaWarehouse, FaTruck, FaMapMarkedAlt, FaParking, FaClipboardCheck, FaFileContract, FaSave } from 'react-icons/fa';
 
-const AjukanPermohonan = () => {
-  const navigate = useNavigate();
-  const location = useLocation(); 
-
+export default function AjukanPermohonan() {
   // State Management
   const [selectedIzin, setSelectedIzin] = useState(null);
   const [submitted, setSubmitted] = useState(false);
@@ -14,7 +11,7 @@ const AjukanPermohonan = () => {
 
   const izinConfig = [
     {
-      id: 'trayek',
+      id: 1,
       nama: 'Izin Trayek Angkutan Umum',
       icon: <FaBus size={30} />,
       deskripsi: 'Izin untuk operasional trayek angkutan umum dalam kota/kabupaten.',
@@ -30,7 +27,7 @@ const AjukanPermohonan = () => {
       ]
     },
     {
-      id: 'lahan_terminal',
+      id: 2,
       nama: 'Izin Pemanfaatan Lahan Terminal',
       icon: <FaWarehouse size={30} />,
       deskripsi: 'Izin penggunaan lahan di area terminal untuk usaha atau kegiatan.',
@@ -49,7 +46,7 @@ const AjukanPermohonan = () => {
       ]
     },
     {
-      id: 'uji_kir',
+      id: 3,
       nama: 'Pendaftaran Uji KIR',
       icon: <FaClipboardCheck size={30} />,
       deskripsi: 'Pendaftaran pengujian kendaraan bermotor berkala.',
@@ -64,7 +61,7 @@ const AjukanPermohonan = () => {
       ]
     },
     {
-      id: 'barang',
+      id: 4,
       nama: 'Izin Operasional Angkutan Barang',
       icon: <FaTruck size={30} />,
       deskripsi: 'Izin operasional untuk kendaraan pengangkut barang logistik/material.',
@@ -80,7 +77,7 @@ const AjukanPermohonan = () => {
       ]
     },
     {
-      id: 'pariwisata',
+      id: 5,
       nama: 'Izin Angkutan Pariwisata',
       icon: <FaMapMarkedAlt size={30} />,
       deskripsi: 'Izin operasional untuk armada bus atau kendaraan wisata.',
@@ -98,7 +95,7 @@ const AjukanPermohonan = () => {
       ]
     },
     {
-      id: 'guna_terminal',
+      id: 6,
       nama: 'Izin Penggunaan Terminal',
       icon: <FaFileContract size={30} />,
       deskripsi: 'Izin penggunaan fasilitas terminal untuk event atau kegiatan insidentil.',
@@ -114,7 +111,7 @@ const AjukanPermohonan = () => {
       ]
     },
     {
-      id: 'parkir',
+      id: 7,
       nama: 'Izin Usaha Perparkiran',
       icon: <FaParking size={30} />,
       deskripsi: 'Izin pengelolaan lahan parkir di area pengawasan Dishub.',
@@ -132,15 +129,6 @@ const AjukanPermohonan = () => {
     }
   ];
 
-  // EFEK: Mengecek apakah ada kiriman data dari halaman Draft?
-  useEffect(() => {
-    if (location.state && location.state.preSelectedId) {
-      const izinYgDicari = izinConfig.find(izin => izin.id === location.state.preSelectedId);
-      if (izinYgDicari) {
-        setSelectedIzin(izinYgDicari); 
-      }
-    }
-  }, [location]);
 
   // Fungsi Submit
   const handleSubmit = (e) => {
@@ -148,7 +136,7 @@ const AjukanPermohonan = () => {
     setSubmitted(true);
     // Simulasi pengiriman data ke backend
     setTimeout(() => {
-      navigate('/dashboard-pemohon');
+      router.visit('/dashboard');
     }, 3000);
   };
 
@@ -161,18 +149,20 @@ const AjukanPermohonan = () => {
   // Fungsi Tutup Modal Draft
   const handleCloseDraftModal = () => {
     setShowDraftModal(false);
-    navigate('/draft'); 
+    router.visit('/draft'); 
   };
 
   // TAMPILAN 1: MENU PILIHAN JENIS IZIN
   if (!selectedIzin) {
     return (
       <Container className="py-5">
+        <Head title="Ajukan Permohonan" />
+        
         <div className="d-flex align-items-center mb-4">
             <Button 
               variant="light" 
               className="me-3 shadow-sm rounded-circle p-0 d-flex align-items-center justify-content-center" 
-              onClick={() => navigate('/dashboard-pemohon')}
+              onClick={() => router.visit('/dashboard')}
               style={{ width: '40px', height: '40px' }} 
             >
             <FaArrowLeft />
@@ -214,6 +204,8 @@ const AjukanPermohonan = () => {
   // TAMPILAN 2: FORMULIR PENGISIAN DATA (DINAMIS)
   return (
     <Container className="py-5">
+        <Head title={`Formulir ${selectedIzin.nama}`} />
+
         {/* Header Form */}
         <div className="d-flex align-items-center mb-4 border-bottom pb-3">
             <Button 
@@ -239,7 +231,7 @@ const AjukanPermohonan = () => {
                 <h4 className="fw-bold">Pengajuan Berhasil Dikirim!</h4>
                 <p className="mb-4">Data Anda telah masuk ke sistem dan sedang menunggu verifikasi Admin.</p>
                 <p className="small text-muted">Anda akan dialihkan ke Dashboard dalam 3 detik...</p>
-                <Button variant="outline-success" onClick={() => navigate('/dashboard-pemohon')}>Kembali ke Dashboard</Button>
+                <Button variant="outline-success" onClick={() => router.visit('/dashboard-pemohon')}>Kembali ke Dashboard</Button>
             </Alert>
         ) : (
             <Row>
@@ -347,5 +339,3 @@ const AjukanPermohonan = () => {
     </Container>
   );
 };
-
-export default AjukanPermohonan;

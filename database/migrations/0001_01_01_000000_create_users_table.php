@@ -26,11 +26,17 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('applicants', function (Blueprint $table) {
+        Schema::create('individual_applicants', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('file_identity')->nullable();
-            $table->string('skpj')->nullable();
+            $table->string('file_ktp')->nullable();
+            $table->timestamps();
+        });
+        Schema::create('company_applicants', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('file_npwp')->nullable();
+            $table->string('file_surat_kuasa')->nullable();
             $table->timestamps();
         });
 
@@ -55,7 +61,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('applicants');
+        Schema::dropIfExists('individual_applicants');
+        Schema::dropIfExists('company_applicants');
         Schema::dropIfExists('users');
         
         Schema::dropIfExists('password_reset_tokens');

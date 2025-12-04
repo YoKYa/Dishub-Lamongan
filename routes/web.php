@@ -13,6 +13,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('profile', [ProfileController::class, 'index'])->name('profile');
     Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::inertia('/bantuan', 'pemohon/bantuan')->name('bantuan');
+    Route::inertia('/ajukan-permohonan', 'pemohon/ajukan-permohonan')->name('ajukan-permohonan');
     //  Route::get('profile', function () {
     //      return Inertia::render('pemohon/profile');
     //  })->name('profile');

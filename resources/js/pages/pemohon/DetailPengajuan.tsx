@@ -1,15 +1,16 @@
 import React from 'react';
 import { Container, Card, Row, Col, Badge, Button, ListGroup, Alert, Tab, Nav } from 'react-bootstrap';
-import { useNavigate, useParams } from 'react-router-dom';
+import { router, Head } from '@inertiajs/react';
 import { FaArrowLeft, FaFilePdf, FaHistory, FaInfoCircle, FaCheckCircle, FaTimesCircle, FaExclamationCircle } from 'react-icons/fa';
-
-const DetailPengajuan = () => {
-  const navigate = useNavigate();
-  const { id } = useParams(); 
+ 
+const DetailPengajuan = ({ id }: { id: string }) => {
+  // Catatan: Di Inertia, parameter route (seperti {id}) diterima sebagai prop.
+  // Jika backend belum siap, kita beri fallback '1' agar tampilan dummy tidak error.
+  const currentId = id || '1';
 
   // DATA DUMMY
   const detailData = {
-    id: id,
+    id: currentId,
     no_registrasi: "REG-2025-001",
     jenis_izin: "Izin Trayek Angkutan Umum",
     tanggal_pengajuan: "20 Oktober 2025",
@@ -38,7 +39,7 @@ const DetailPengajuan = () => {
     ]
   };
 
-  const getStatusVariant = (status) => {
+  const getStatusVariant = (status: string) => {
     switch (status) {
       case 'Disetujui': return 'success';
       case 'Ditolak': return 'danger';
@@ -47,7 +48,7 @@ const DetailPengajuan = () => {
     }
   };
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = (status: string) => {
     switch (status) {
       case 'Disetujui': return <FaCheckCircle className="me-2" />;
       case 'Ditolak': return <FaTimesCircle className="me-2" />;
@@ -58,12 +59,14 @@ const DetailPengajuan = () => {
 
   return (
     <Container className="py-5">
+      <Head title={`Detail Pengajuan #${detailData.no_registrasi}`} />
+
       {/* Header Navigasi */}
       <div className="d-flex align-items-center mb-4">
         <Button 
             variant="light" 
             className="me-3 shadow-sm rounded-circle p-0 d-flex align-items-center justify-content-center" 
-            onClick={() => navigate('/status-pengajuan')}
+            onClick={() => router.visit('/status-pengajuan')}
             style={{ width: '40px', height: '40px' }}
         >
         <FaArrowLeft />

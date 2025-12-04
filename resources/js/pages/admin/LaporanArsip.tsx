@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { Container, Card, Row, Col, Form, Button, Table, Badge } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { router, Head } from '@inertiajs/react';
 import { FaArrowLeft, FaFileExcel, FaFilePdf, FaFilter, FaChartBar, FaCalendarAlt } from 'react-icons/fa';
 
 const LaporanArsip = () => {
-  const navigate = useNavigate();
-  
   // State Filter
   const [filter, setFilter] = useState({
     bulan: 'Oktober',
@@ -28,6 +26,8 @@ const LaporanArsip = () => {
 
   return (
     <div className="bg-light min-vh-100 py-4">
+      <Head title="Laporan & Arsip" />
+
       <Container>
         {/* HEADER */}
         <div className="d-flex align-items-center justify-content-between mb-4">
@@ -35,7 +35,7 @@ const LaporanArsip = () => {
                 <Button 
                     variant="light" 
                     className="me-3 shadow-sm rounded-circle p-0 d-flex align-items-center justify-content-center" 
-                    onClick={() => navigate('/dashboard-admin')}
+                    onClick={() => router.visit('/dashboard-admin')}
                     style={{ width: '40px', height: '40px' }} 
                 >
                 <FaArrowLeft />

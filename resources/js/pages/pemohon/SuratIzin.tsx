@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Card, Button, Row, Col, Spinner } from 'react-bootstrap';
-import { useNavigate, useParams } from 'react-router-dom';
-import { FaArrowLeft, FaPrint, FaDownload, FaQrcode, FaFileSignature } from 'react-icons/fa';
+import { router, Head } from '@inertiajs/react';
+import { FaArrowLeft, FaPrint, FaQrcode } from 'react-icons/fa';
 
-const SuratIzin = () => {
-  const navigate = useNavigate();
-  const { id } = useParams(); // Tangkap ID dari URL (misal: 1 atau 2)
+const SuratIzin = ({ id }: { id: string }) => {
+  // Catatan: 'id' diterima sebagai prop dari controller Laravel. 
+  // Jika akses langsung tanpa ID, kita beri fallback '1' untuk demo.
+  const currentId = id || "1";
+  
   const [dataSurat, setDataSurat] = useState(null);
 
-  // Simulasi Ambil Data Berbeda berdasarkan ID
+  // Simulasi Ambil Data Berbeda berdasarkan ID (Client-side simulation)
+  // Idealnya data ini dikirim langsung dari Controller sebagai prop 'surat'
   useEffect(() => {
-    // Ini ceritanya database backend
     const databaseSurat = {
       "1": {
         judul: "SURAT IZIN TRAYEK ANGKUTAN UMUM",
@@ -30,17 +32,29 @@ const SuratIzin = () => {
       }
     };
 
-    setDataSurat(databaseSurat[id]);
-  }, [id]);
+    // Simulasi delay network
+    setTimeout(() => {
+        setDataSurat(databaseSurat[currentId as keyof typeof databaseSurat]);
+    }, 500);
+  }, [currentId]);
 
   const handlePrint = () => {
     window.print();
   };
 
-  if (!dataSurat) return <Container className="text-center py-5"><Spinner animation="border" /></Container>;
+  if (!dataSurat) {
+      return (
+        <Container className="text-center py-5" style={{height: '100vh'}}>
+            <Spinner animation="border" variant="primary" />
+            <p className="mt-3 text-muted">Memuat dokumen...</p>
+        </Container>
+      );
+  }
 
   return (
     <div className="bg-light min-vh-100 py-5">
+      <Head title={`Cetak Surat - ${dataSurat.nomor}`} />
+
       <Container>
         {/* Header Navigasi (Tidak dicetak) */}
         <div className="d-flex align-items-center justify-content-between mb-4 d-print-none">
@@ -48,14 +62,14 @@ const SuratIzin = () => {
                 <Button 
                     variant="light" 
                     className="me-3 shadow-sm rounded-circle p-0 d-flex align-items-center justify-content-center" 
-                    onClick={() => navigate('/daftar-surat')}
+                    onClick={() => router.visit('/daftar-surat')}
                     style={{ width: '40px', height: '40px' }}
                 >
                 <FaArrowLeft />
                 </Button>
                 <div>
                     <h3 className="fw-bold mb-0">Preview Dokumen</h3>
-                    <span className="text-muted small">ID Surat: {id}</span>
+                    <span className="text-muted small">ID Surat: {currentId}</span>
                 </div>
             </div>
             <div className="d-flex gap-2">
@@ -72,7 +86,9 @@ const SuratIzin = () => {
                 {/* KOP SURAT */}
                 <div className="border-bottom border-dark border-3 pb-3 mb-4" style={{ borderBottomWidth: '3px !important' }}>
                     <div className="d-flex align-items-center gap-3 text-center justify-content-center">
+                        {/* Placeholder Logo */}
                         <div style={{width: 70, height: 80, background: '#0d6efd', borderRadius: '50% 50% 5px 5px', display:'flex', alignItems:'center', justifyContent:'center', color:'white', fontWeight:'bold'}}>LOGO</div>
+                        
                         <div className="flex-grow-1 text-uppercase text-center">
                             <h5 className="mb-0 fw-bold" style={{fontSize: '1.2rem'}}>Pemerintah Kabupaten Lamongan</h5>
                             <h4 className="mb-0 fw-bold display-6" style={{fontWeight: '800', letterSpacing: '1px'}}>Dinas Perhubungan</h4>
@@ -123,8 +139,16 @@ const SuratIzin = () => {
             </Card.Body>
         </Card>
 
-        {/* CSS CETAK */}
-        <style>{`@media print { body * { visibility: hidden; } .card, .card * { visibility: visible; } .card { position: absolute; left: 0; top: 0; width: 100%; margin: 0 !important; box-shadow: none !important; border: none !important; } .d-print-none { display: none !important; } }`}</style>
+        {/* CSS CETAK KHUSUS HALAMAN INI */}
+        <style>{`
+            @media print { 
+                body * { visibility: hidden; } 
+                .card, .card * { visibility: visible; } 
+                .card { position: absolute; left: 0; top: 0; width: 100%; margin: 0 !important; box-shadow: none !important; border: none !important; } 
+                .d-print-none { display: none !important; } 
+                @page { margin: 0; size: auto; }
+            }
+        `}</style>
       </Container>
     </div>
   );

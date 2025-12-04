@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { Container, Card, Table, Button, Badge, Modal, Form, InputGroup, Alert } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { router, Head } from '@inertiajs/react';
 import { FaArrowLeft, FaUserPlus, FaEdit, FaTrash, FaUserShield, FaEnvelope, FaKey, FaCheckCircle } from 'react-icons/fa';
 
 const ManajemenUser = () => {
-  const navigate = useNavigate();
-
   // Data Dummy 
   const [users, setUsers] = useState([
     { id: 1, nama: "Administrator Utama", email: "admin@dishub.lamongan.go.id", role: "Super Admin" },
@@ -53,13 +51,15 @@ const ManajemenUser = () => {
 
   return (
     <div className="bg-light min-vh-100 py-4">
+      <Head title="Manajemen User" />
+
       <Container>
         <div className="d-flex align-items-center justify-content-between mb-4">
             <div className="d-flex align-items-center">
                 <Button 
                     variant="light" 
                     className="me-3 shadow-sm rounded-circle p-0 d-flex align-items-center justify-content-center" 
-                    onClick={() => navigate('/dashboard-admin')}
+                    onClick={() => router.visit('/dashboard-admin')}
                     style={{ width: '40px', height: '40px' }} 
                 >
                 <FaArrowLeft />

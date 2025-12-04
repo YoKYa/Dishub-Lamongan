@@ -1,19 +1,17 @@
 import React from 'react';
 import { Container, Card, Table, Badge, Button } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { router, Head } from '@inertiajs/react';
 import { FaArrowLeft } from 'react-icons/fa';
 
 const StatusPengajuan = () => {
-  const navigate = useNavigate();
-
-  // Data Dummy
+  // Data Dummy (Nanti bisa diganti dengan props dari backend)
   const pengajuanList = [
     { id: 1, tanggal: "20-10-2025", jenis: "Izin Trayek Angkutan Umum", status: "Menunggu Verifikasi" },
     { id: 2, tanggal: "15-10-2025", jenis: "Pendaftaran Uji KIR", status: "Disetujui" },
     { id: 3, tanggal: "10-10-2025", jenis: "Izin Usaha Perparkiran", status: "Ditolak" },
   ];
 
-  const getStatusBadge = (status) => {
+  const getStatusBadge = (status: string) => {
     switch (status) {
       case 'Disetujui': return 'success';
       case 'Ditolak': return 'danger';
@@ -24,12 +22,14 @@ const StatusPengajuan = () => {
 
   return (
     <Container className="py-5">
+      <Head title="Status Pengajuan Saya" />
+
       {/* Header Halaman */}
       <div className="d-flex align-items-center mb-4">
         <Button 
           variant="light" 
           className="me-3 shadow-sm rounded-circle p-0 d-flex align-items-center justify-content-center" 
-          onClick={() => navigate('/dashboard-pemohon')}
+          onClick={() => router.visit('/dashboard-pemohon')}
           style={{ width: '40px', height: '40px' }}
         >
         <FaArrowLeft />
@@ -65,7 +65,7 @@ const StatusPengajuan = () => {
                     <Button 
                     variant="outline-primary" 
                     size="sm" 
-                    onClick={() => navigate(`/detail-pengajuan/${item.id}`)} // Perubahan disini
+                    onClick={() => router.visit(`/detail-pengajuan/${item.id}`)} // Navigasi ke detail
                     >
                     Detail
                     </Button>

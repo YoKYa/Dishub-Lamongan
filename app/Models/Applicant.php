@@ -6,12 +6,25 @@ use Illuminate\Database\Eloquent\Model;
 
 class Applicant extends Model
 {
+    protected $table = 'applicant';
+
     protected $fillable = [
-        'file_identity',
-        'skpj',
+        'user_id',
+        'type_applicant_id',
+        'status',
+        'catatan',
     ];
-    public function user()
+
+    public function detailApplicants()
     {
-        return $this->belongsTo(User::class);
+        return $this->hasMany(DetailApplicant::class, 'applicant_id');
+    }
+    public function documents()
+    {
+        return $this->hasMany(Document::class, 'applicant_id');
+    }
+    public function typeApplicant()
+    {
+        return $this->belongsTo(TypeApplicant::class, 'type_applicant_id');
     }
 }

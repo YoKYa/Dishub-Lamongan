@@ -23,9 +23,13 @@ class User extends Authenticatable
         'email',
         'password',
     ];
-    public function applicant()
+    public function individualApplicant()
     {
-        return $this->hasOne(Applicant::class);
+        return $this->hasOne(IndividualApplicant::class);
+    }
+        public function companyApplicant()
+    {
+        return $this->hasOne(companyApplicant::class);
     }
 
     /**

@@ -10,9 +10,18 @@ class ProfileController extends Controller
 {
     public function index(Request $request)
     {
-        return inertia('pemohon/profile', [
-            'file' => $request->user()->applicant()->first(),
+        if ($request->user()->role == 'perorangan') {
+            return inertia('pemohon/profile', [
+            'file' => $request->user()->individualApplicant()->first(),
         ]);
+            
+        } else if ($request->user()->role == 'perusahaan') {
+            return inertia('pemohon/profile', [
+            'file' => $request->user()->companyApplicant()->first(),
+        ]);
+        }
+        
+        
     }
 
     // Menggunakan nama 'update' karena kita memperbarui data

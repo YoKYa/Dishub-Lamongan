@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { Container, Card, Form, Button, InputGroup, Alert } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { router, Head } from '@inertiajs/react';
 import { FaUserShield, FaLock, FaKey } from 'react-icons/fa';
 
 const LoginAdmin = () => {
-  const navigate = useNavigate();
   const [form, setForm] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
 
@@ -16,7 +15,7 @@ const LoginAdmin = () => {
     // Password: admin123
     if (form.username === 'admin' && form.password === 'admin123') {
         
-        // Simpan sesi sebagai ADMIN
+        // Simpan sesi sebagai ADMIN (Simulasi Frontend)
         const adminData = {
             nama: "Administrator Dishub",
             role: "admin",
@@ -24,8 +23,8 @@ const LoginAdmin = () => {
         };
         localStorage.setItem("user", JSON.stringify(adminData));
         
-        // Arahkan ke Dashboard Admin
-        navigate('/dashboard-admin');
+        // Arahkan ke Dashboard Admin menggunakan Inertia
+        router.visit('/dashboard-admin');
     } else {
         setError("Username atau Password salah!");
     }
@@ -33,6 +32,8 @@ const LoginAdmin = () => {
 
   return (
     <div className="bg-dark min-vh-100 d-flex align-items-center justify-content-center py-5">
+      <Head title="Login Administrator" />
+
       <Container style={{ maxWidth: '450px' }}>
         <Card className="border-0 shadow-lg rounded-4 overflow-hidden">
             <div className="bg-primary p-4 text-center text-white">

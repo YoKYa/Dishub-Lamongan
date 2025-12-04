@@ -1,11 +1,9 @@
 import React from 'react';
 import { Container, Card, Table, Button, Badge } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import { FaArrowLeft, FaFilePdf, FaEye } from 'react-icons/fa';
+import { router, Head } from '@inertiajs/react';
+import { FaArrowLeft, FaEye } from 'react-icons/fa';
 
 const DaftarSuratIzin = () => {
-  const navigate = useNavigate();
-
   // Data Dummy
   const listSurat = [
     { 
@@ -26,11 +24,13 @@ const DaftarSuratIzin = () => {
 
   return (
     <Container className="py-5">
+      <Head title="Arsip Surat Izin" />
+
       <div className="d-flex align-items-center mb-4">
         <Button 
           variant="light" 
           className="me-3 shadow-sm rounded-circle p-0 d-flex align-items-center justify-content-center" 
-          onClick={() => navigate('/dashboard-pemohon')}
+          onClick={() => router.visit('/dashboard-pemohon')}
           style={{ width: '40px', height: '40px' }}
         >
         <FaArrowLeft />
@@ -72,7 +72,7 @@ const DaftarSuratIzin = () => {
                         variant="primary" 
                         size="sm" 
                         className="d-inline-flex align-items-center gap-2"
-                        onClick={() => navigate(`/surat-izin/${item.id}`)} // Pindah ke detail berdasarkan ID
+                        onClick={() => router.visit(`/surat-izin/${item.id}`)} // Pindah ke detail berdasarkan ID
                     >
                         <FaEye /> Lihat Surat
                     </Button>
