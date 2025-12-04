@@ -11,7 +11,7 @@ class TypeRequest extends Model
         'deskripsi',
         'syarat_dokumen',
     ];
-    public function applicants()
+    public function requests()
     {
         return $this->hasMany(Request::class, 'request_id');
     }

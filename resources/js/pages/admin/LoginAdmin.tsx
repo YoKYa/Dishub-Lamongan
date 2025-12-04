@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Container, Card, Form, Button, InputGroup, Alert } from 'react-bootstrap';
 import { router, Head } from '@inertiajs/react';
-import { FaUserShield, FaLock, FaKey } from 'react-icons/fa';
+import { FaUserShield, FaKey } from 'react-icons/fa';
 
 const LoginAdmin = () => {
   const [form, setForm] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
 
-  const handleLogin = (e) => {
+  const handleLogin = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     
     // LOGIKA LOGIN KHUSUS ADMIN (Hardcoded untuk Demo)

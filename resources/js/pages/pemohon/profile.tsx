@@ -35,8 +35,8 @@ export default function Profile() {
 
     // Define type for dokumen
     type DokumenType = {
-        file_identity: string;
-        skpj: string;
+        file1: string;
+        file2: string;
         [key: string]: unknown;
     };
 
@@ -62,7 +62,9 @@ export default function Profile() {
     });
 
     // State untuk preview visual foto & file asli
-    const [photoPreview, setPhotoPreview] = useState(userData.photo_profile || null);
+    const [photoPreview, setPhotoPreview] = useState(
+        userData.photo_profile || null,
+    );
     const [photoFile, setPhotoFile] = useState<File | null>(null);
 
     // --- HANDLERS ---
@@ -344,7 +346,8 @@ export default function Profile() {
                                         />
                                         <div>
                                             <div className="fw-bold small">
-                                                {userData.dokumen.skpj === null
+                                                {userData.dokumen.file_ktp !=
+                                                null
                                                     ? 'File KTP'
                                                     : 'File NPWP'}
                                             </div>
@@ -354,18 +357,34 @@ export default function Profile() {
                                                     fontSize: '0.75rem',
                                                 }}
                                             >
-                                                {userData.dokumen.file_identity}
+                                                {userData.dokumen.file_ktp !=
+                                                null
+                                                    ? userData.dokumen.file_ktp
+                                                    : userData.dokumen
+                                                          .file_npwp}
                                             </div>
                                         </div>
                                     </div>
-                                    <a
+                                    {userData.dokumen.file_ktp != null ? (
+                                        <a
+                                            rel="noopener noreferrer"
+                                            href={userData.dokumen.file_ktp}
+                                            target="_blank"
+                                            className="text-decoration-none"
+                                        >
+                                            Lihat
+                                        </a>
+                                    ) : (
+                                        <a
                                         rel="noopener noreferrer"
-                                        href={userData.dokumen.file_identity}
+                                        href={userData.dokumen.file_npwp}
                                         target="_blank"
                                         className="text-decoration-none"
                                     >
                                         Lihat
                                     </a>
+                                    )}
+                                    
                                 </div>
                                 {auth.user.role === 'perusahaan' ? (
                                     <div className="d-flex align-items-center justify-content-between p-3 bg-light rounded mb-2 border">
@@ -384,13 +403,19 @@ export default function Profile() {
                                                         fontSize: '0.75rem',
                                                     }}
                                                 >
-                                                    {userData.dokumen.skpj}
+                                                    {
+                                                        userData.dokumen
+                                                            .file_surat_kuasa
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
                                         <a
                                             rel="noopener noreferrer"
-                                            href={userData.dokumen.skpj}
+                                            href={
+                                                userData.dokumen
+                                                    .file_surat_kuasa
+                                            }
                                             target="_blank"
                                             className="text-decoration-none"
                                         >
@@ -407,7 +432,9 @@ export default function Profile() {
                                             onClick={() => {
                                                 setIsEditing(false);
                                                 setPhotoPreview(
-                                                    String(userData.photo_profile),
+                                                    String(
+                                                        userData.photo_profile,
+                                                    ),
                                                 ); // Reset preview
                                                 setPhotoFile(null);
                                             }}

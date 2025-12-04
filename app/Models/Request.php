@@ -25,6 +25,6 @@ class Request extends Model
     }
     public function typeRequest()
     {
-        return $this->belongsTo(typeRequest::class, 'type_applicant_id');
+        return $this->belongsTo(typeRequest::class, 'type_request_id');
     }
 }
