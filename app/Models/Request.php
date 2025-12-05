@@ -9,6 +9,7 @@ class Request extends Model
     protected $table = 'requests';
 
     protected $fillable = [
+        'register_number',
         'user_id',
         'type_request_id',
         'status',

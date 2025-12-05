@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('requests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('register_number')->unique();
             $table->foreignId('type_request_id')->constrained('type_requests')->onDelete('cascade');
             $table->string('status')->default('pending');
             $table->text('catatan')->nullable();
