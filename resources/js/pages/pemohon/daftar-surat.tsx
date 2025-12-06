@@ -3,7 +3,7 @@ import { Container, Card, Table, Button, Badge } from 'react-bootstrap';
 import { router, Head } from '@inertiajs/react';
 import { FaArrowLeft, FaEye } from 'react-icons/fa';
 
-const DaftarSuratIzin = () => {
+export default function DaftarSurat() {
   // Data Dummy
   const listSurat = [
     { 
@@ -90,5 +90,3 @@ const DaftarSuratIzin = () => {
     </Container>
   );
 };
-
-export default DaftarSuratIzin;
