@@ -5,10 +5,10 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DraftController;
+use App\Http\Controllers\SuratIzinController;
 use App\Http\Controllers\StatusPengajuanController;
 use App\Http\Controllers\{RequestController, ProfileController};
 
-Auth::login(User::find(1));
 Route::inertia('/', 'public/welcome')->name('home');
 Route::inertia('alur-perizinan', 'public/alur-perizinan')->name('alur-perizinan');
 Route::inertia('cek-permohonan', 'public/cek-permohonan')->name('cek-permohonan');
@@ -31,6 +31,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/status-pengajuan', [StatusPengajuanController::class, 'index'])->name('status-pengajuan');
     Route::get('/detail-pengajuan/{id}', [RequestController::class, 'detail'])->name('pengajuan.detail');
+    Route::get('/daftar-surat', [SuratIzinController::class, 'index'])->name('surat.index');
+    Route::get('/surat-izin/{id}', [SuratIzinController::class, 'show'])->name('surat.show');
+
 });
 
 require __DIR__.'/settings.php';
