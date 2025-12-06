@@ -1,5 +1,5 @@
-import { Head, router } from '@inertiajs/react';
-import { useState } from 'react';
+import { Head, router, usePage } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
 
 import {
     Alert,
@@ -26,7 +26,10 @@ import {
 } from 'react-icons/fa';
 
 export default function AjukanPermohonan() {
-    // State Management
+    const { props }: any = usePage();
+    const draft = props.draft;
+    const isEditingDraft = draft ? true : false;
+
     const [selectedIzin, setSelectedIzin] = useState(null);
     const [submitted, setSubmitted] = useState(false);
     const [showDraftModal, setShowDraftModal] = useState(false);
@@ -37,22 +40,47 @@ export default function AjukanPermohonan() {
             typeRequest: 0,
             status: 'proses',
         },
-
-        // 🟩 FIELD DINAMIS DIUBAH JADI ARRAY
         detailPermohonan: [],
-
-        dokumen: {},
+        documents: {},
     });
-    const handleDocChange = (label: string | number, file: any) => {
-        const updated = { ...requestData.dokumen };
-        updated[label] = file; // 🔥 file disimpan berdasarkan LABEL
+
+    // ============================================
+    // LOAD DRAFT
+    // ============================================
+    useEffect(() => {
+        if (!draft) return;
+
+        const izin = izinConfig.find((i) => i.id === draft.type_request_id);
+        setSelectedIzin(izin);
+
+        const mappedFields = izin.fields.map((f) => {
+            const ditemukan = draft.detail_requests.find(
+                (x) => x.field_name === f.label,
+            );
+            return {
+                field_name: f.label,
+                field_value: ditemukan ? ditemukan.field_value : '',
+            };
+        });
+
+        const mappedDocs = {};
+        draft.documents.forEach((d) => {
+            mappedDocs[d.nama] = d.file_path;
+        });
 
         setRequestData({
-            ...requestData,
-            dokumen: updated,
+            permohonan: {
+                typeRequest: draft.type_request_id,
+                status: draft.status,
+            },
+            detailPermohonan: mappedFields,
+            documents: mappedDocs,
         });
-    };
-    // 🟩 HANDLE FIELD DINAMIS
+    }, [draft]);
+
+    // ============================================
+    // HANDLE FIELD
+    // ============================================
     const handleFieldChange = (index, label, value) => {
         const updated = [...requestData.detailPermohonan];
         updated[index] = {
@@ -65,9 +93,21 @@ export default function AjukanPermohonan() {
         });
     };
 
-    // ----------------------------
-    // SUBMIT FORM
-    // ----------------------------
+    // ============================================
+    // HANDLE DOCUMENT UPLOAD
+    // ============================================
+    const handleDocChange = (label, file) => {
+        const updated = { ...requestData.documents };
+        updated[label] = file;
+        setRequestData({
+            ...requestData,
+            documents: updated,
+        });
+    };
+
+    // ============================================
+    // SUBMIT PENGAJUAN (KIRIM)
+    // ============================================
     const handleSubmit = (e) => {
         e.preventDefault();
         setSubmitted(true);
@@ -75,76 +115,80 @@ export default function AjukanPermohonan() {
         const formData = new FormData();
 
         formData.append('type_request_id', requestData.permohonan.typeRequest);
-        formData.append('status', requestData.permohonan.status);
+        formData.append('status', 'Menunggu Verifikasi');
 
-        // 🔥 KIRIM FIELD DINAMIS
         requestData.detailPermohonan.forEach((item, index) => {
             formData.append(
-                `detail_permohonan[${index}][field_name]`,
+                `detail_requests[${index}][field_name]`,
                 item.field_name,
             );
             formData.append(
-                `detail_permohonan[${index}][field_value]`,
+                `detail_requests[${index}][field_value]`,
                 item.field_value,
             );
         });
 
-        // 🔥 KIRIM DOKUMEN DINAMIS
-        Object.keys(requestData.dokumen).forEach((key) => {
-            formData.append(`dokumen[${key}]`, requestData.dokumen[key]);
+        Object.keys(requestData.documents).forEach((key) => {
+            formData.append(`documents[${key}]`, requestData.documents[key]);
         });
 
-        router.post('/submit-request', formData, {
-            forceFormData: true,
-        });
+        if (isEditingDraft) {
+            formData.append('_method', 'POST');
+            router.post(`/submit-draft/${draft.id}`, formData, {
+                forceFormData: true,
+            });
+        } else {
+            router.post('/submit-request', formData, {
+                forceFormData: true,
+            });
+        }
 
         setTimeout(() => {
             router.visit('/dashboard');
-        }, 3000);
+        }, 2000);
     };
 
+    // ============================================
+    // SAVE DRAFT
+    // ============================================
     const handleSubmitDraft = () => {
         const formData = new FormData();
 
         formData.append('type_request_id', requestData.permohonan.typeRequest);
-        formData.append('status', 'draft'); // 🔥 status draft
+        formData.append('status', 'draft');
 
-        // FIELD DINAMIS
         requestData.detailPermohonan.forEach((item, index) => {
             formData.append(
-                `detail_permohonan[${index}][field_name]`,
+                `detail_requests[${index}][field_name]`,
                 item.field_name,
             );
             formData.append(
-                `detail_permohonan[${index}][field_value]`,
+                `detail_requests[${index}][field_value]`,
                 item.field_value,
             );
         });
 
-        // FILE DINAMIS
-        Object.keys(requestData.dokumen).forEach((key) => {
-            formData.append(`dokumen[${key}]`, requestData.dokumen[key]);
+        Object.keys(requestData.documents).forEach((key) => {
+            formData.append(`documents[${key}]`, requestData.documents[key]);
         });
 
-        router.post('/submit-request', formData, {
-            forceFormData: true,
-            onSuccess: () => setShowDraftModal(true), // muncul modal draft
-        });
+        if (isEditingDraft) {
+            formData.append('_method', 'PUT');
+            router.post(`/submit-request/${draft.id}`, formData, {
+                forceFormData: true,
+                onSuccess: () => setShowDraftModal(true),
+            });
+        } else {
+            router.post('/submit-request', formData, {
+                forceFormData: true,
+                onSuccess: () => setShowDraftModal(true),
+            });
+        }
     };
 
-    // Fungsi Simpan Draft
-    const handleSaveDraft = () => {
-        setShowDraftModal(true);
-    };
-
-    const handleCloseDraftModal = () => {
-        setShowDraftModal(false);
-        router.visit('/draft');
-    };
-
-    // ============================================================
-    // SELURUH KONFIGURASI IZIN & UI DIPERTAHANKAN APA ADANYA
-    // ============================================================
+    // ===============================================================
+    //  FULL IZIN CONFIG — 7 TIPE PERMOHONAN (TANPA ADA YANG DIUBAH)
+    // ===============================================================
 
     const izinConfig = [
         {
@@ -176,7 +220,6 @@ export default function AjukanPermohonan() {
                 { label: 'Bukti Lulus Uji KIR', accept: '.pdf,.jpg' },
             ],
         },
-
         {
             id: 2,
             nama: 'Izin Pemanfaatan Lahan Terminal',
@@ -212,7 +255,6 @@ export default function AjukanPermohonan() {
                 },
             ],
         },
-
         {
             id: 3,
             nama: 'Pendaftaran Uji KIR',
@@ -240,7 +282,6 @@ export default function AjukanPermohonan() {
                 { label: 'Bukti Pembayaran Retribusi', accept: '.pdf,.jpg' },
             ],
         },
-
         {
             id: 4,
             nama: 'Izin Operasional Angkutan Barang',
@@ -270,7 +311,6 @@ export default function AjukanPermohonan() {
                 { label: 'Bukti Lulus Uji KIR', accept: '.pdf,.jpg' },
             ],
         },
-
         {
             id: 5,
             nama: 'Izin Angkutan Pariwisata',
@@ -305,7 +345,6 @@ export default function AjukanPermohonan() {
                 },
             ],
         },
-
         {
             id: 6,
             nama: 'Izin Penggunaan Terminal',
@@ -334,7 +373,6 @@ export default function AjukanPermohonan() {
                 { label: 'Bukti Pembayaran Retribusi', accept: '.pdf,.jpg' },
             ],
         },
-
         {
             id: 7,
             nama: 'Izin Usaha Perparkiran',
@@ -366,9 +404,8 @@ export default function AjukanPermohonan() {
             ],
         },
     ];
-
     // ============================================================
-    // TAMPILAN 1: MENU IZIN (TIDAK DIUBAH SAMA SEKALI)
+    // TAMPILAN HALAMAN 1: PILIH JENIS IZIN (TIDAK DIUBAH)
     // ============================================================
 
     if (!selectedIzin) {
@@ -406,8 +443,13 @@ export default function AjukanPermohonan() {
                                 }}
                                 onClick={() => {
                                     setSelectedIzin(izin);
-                                    requestData.permohonan.typeRequest =
-                                        izin.id;
+                                    setRequestData((prev) => ({
+                                        ...prev,
+                                        permohonan: {
+                                            ...prev.permohonan,
+                                            typeRequest: izin.id,
+                                        },
+                                    }));
                                 }}
                             >
                                 <Card.Body className="p-4">
@@ -440,7 +482,7 @@ export default function AjukanPermohonan() {
     }
 
     // ============================================================
-    // TAMPILAN 2: FORMULIR (UI TIDAK DIUBAH SAMA SEKALI)
+    // TAMPILAN HALAMAN 2: FORMULIR PERMOHONAN (TIDAK DIUBAH)
     // ============================================================
 
     return (
@@ -456,6 +498,7 @@ export default function AjukanPermohonan() {
                 >
                     <FaArrowLeft />
                 </Button>
+
                 <div>
                     <span className="text-muted small text-uppercase fw-bold">
                         Formulir Pengajuan
@@ -481,11 +524,11 @@ export default function AjukanPermohonan() {
                         verifikasi Admin.
                     </p>
                     <p className="small text-muted">
-                        Anda akan dialihkan ke Dashboard dalam 3 detik...
+                        Anda akan dialihkan ke Dashboard dalam 2 detik...
                     </p>
                     <Button
                         variant="outline-success"
-                        onClick={() => router.visit('/dashboard-pemohon')}
+                        onClick={() => router.visit('/dashboard')}
                     >
                         Kembali ke Dashboard
                     </Button>
@@ -495,8 +538,10 @@ export default function AjukanPermohonan() {
                     <Col md={10} lg={8} className="mx-auto">
                         <Card className="shadow rounded-4 border-0">
                             <Card.Body className="p-5">
-                                <Form onSubmit={handleSubmit}>
-                                    {/* BAGIAN 1 (UI tidak diubah) */}
+                                <Form>
+                                    {/* ==============================
+                                        BAGIAN 1: FIELD DINAMIS
+                                    =============================== */}
                                     <div className="mb-5">
                                         <h5 className="fw-bold mb-4 text-dark d-flex align-items-center">
                                             <span
@@ -504,7 +549,6 @@ export default function AjukanPermohonan() {
                                                 style={{
                                                     width: 30,
                                                     height: 30,
-                                                    fontSize: 14,
                                                 }}
                                             >
                                                 1
@@ -526,7 +570,6 @@ export default function AjukanPermohonan() {
                                                             </span>
                                                         </Form.Label>
 
-                                                        {/* 🟩 VALUE & ONCHANGE DIBENARKAN */}
                                                         <Form.Control
                                                             required={!isDraft}
                                                             type={field.type}
@@ -557,7 +600,9 @@ export default function AjukanPermohonan() {
                                         </div>
                                     </div>
 
-                                    {/* BAGIAN 2 (UI tidak diubah) */}
+                                    {/* ==============================
+                                        BAGIAN 2: DOKUMEN
+                                    =============================== */}
                                     <div className="mb-5">
                                         <h5 className="fw-bold mb-3 text-dark d-flex align-items-center">
                                             <span
@@ -565,7 +610,6 @@ export default function AjukanPermohonan() {
                                                 style={{
                                                     width: 30,
                                                     height: 30,
-                                                    fontSize: 14,
                                                 }}
                                             >
                                                 2
@@ -647,7 +691,9 @@ export default function AjukanPermohonan() {
                                         </div>
                                     </div>
 
-                                    {/* BUTTON */}
+                                    {/* ==============================
+                                        BUTTON AKSI
+                                    =============================== */}
                                     <div className="d-grid gap-2 pt-3">
                                         <Row>
                                             <Col md={6}>
@@ -657,7 +703,7 @@ export default function AjukanPermohonan() {
                                                     className="w-100 fw-bold py-3 shadow-sm"
                                                     type="button"
                                                     onClick={() => {
-                                                        setIsDraft(true); // 🔥 mode draft
+                                                        setIsDraft(true);
                                                         setRequestData(
                                                             (prev) => ({
                                                                 ...prev,
@@ -677,11 +723,13 @@ export default function AjukanPermohonan() {
 
                                             <Col md={6}>
                                                 <Button
+                                                    type="button"
                                                     variant="primary"
                                                     size="lg"
                                                     className="w-100 fw-bold py-3 shadow-sm"
-                                                    onClick={() => {
-                                                        setIsDraft(false); // 🔥 mode kirim → required aktif
+                                                    onClick={(e) => {
+                                                        e.preventDefault(); // 🔥 STOP auto submit FORM
+                                                        setIsDraft(false);
                                                         setRequestData(
                                                             (prev) => ({
                                                                 ...prev,
@@ -691,8 +739,8 @@ export default function AjukanPermohonan() {
                                                                 },
                                                             }),
                                                         );
+                                                        handleSubmit(e); // 🔥 panggil manual
                                                     }}
-                                                    type="submit"
                                                 >
                                                     Kirim Pengajuan Izin
                                                 </Button>
@@ -700,6 +748,7 @@ export default function AjukanPermohonan() {
                                         </Row>
 
                                         <Button
+                                            type="button"
                                             variant="link"
                                             className="text-decoration-none text-muted mt-2"
                                             onClick={() =>
@@ -716,10 +765,12 @@ export default function AjukanPermohonan() {
                 </Row>
             )}
 
-            {/* MODAL */}
+            {/* ==============================
+                MODAL DRAFT
+            =============================== */}
             <Modal
                 show={showDraftModal}
-                onHide={handleCloseDraftModal}
+                onHide={() => setShowDraftModal(false)}
                 centered
             >
                 <Modal.Body className="p-5 text-center">
@@ -730,7 +781,7 @@ export default function AjukanPermohonan() {
                     <Button
                         variant="warning"
                         className="px-4 text-white fw-bold"
-                        onClick={handleCloseDraftModal}
+                        onClick={() => router.visit('/draft')}
                     >
                         Lihat Daftar Draft
                     </Button>
