@@ -15,6 +15,10 @@ class Request extends Model
         'status',
         'catatan',
     ];
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
     public function detailRequests()
     {

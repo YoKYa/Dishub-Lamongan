@@ -10,22 +10,14 @@ class SuratIzin extends Model
 
     protected $fillable = [
         'request_id',
-        'user_id',
-        'jenis_izin',
         'nomor_surat',
+        'lokasi_file',
         'tanggal_terbit',
-        'nama_pemohon',
-        'nama_usaha',
-        'objek_label',
-        'objek_value',
-        'keterangan',
-        'file_pdf',
-        'qr_code',
-        'status',
+        'tanggal_kadaluwarsa',
     ];
 
     public function request()
     {
-        return $this->belongsTo(Request::class);
+        return $this->belongsTo(Request::class, 'request_id');
     }
 }

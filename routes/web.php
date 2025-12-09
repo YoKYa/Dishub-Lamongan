@@ -2,10 +2,14 @@
 
 use App\Models\User;
 use Inertia\Inertia;
+use App\Models\SuratIzin;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DraftController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\SuratIzinController;
+use App\Http\Controllers\VerifikasiController;
+use App\Http\Controllers\DashboardAdminController;
 use App\Http\Controllers\StatusPengajuanController;
 use App\Http\Controllers\{RequestController, ProfileController};
 
@@ -33,6 +37,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/detail-pengajuan/{id}', [RequestController::class, 'detail'])->name('pengajuan.detail');
     Route::get('/daftar-surat', [SuratIzinController::class, 'index'])->name('surat.index');
     Route::get('/surat-izin/{id}', [SuratIzinController::class, 'show'])->name('surat.show');
+
+    Route::middleware(['role:admin'])->group(function () {
+
+    Route::get('admin', [DashboardAdminController::class, 'index']);
+
+    Route::get('/admin/verifikasi', [VerifikasiController::class, 'index'])->name('verifikasi.list');
+    Route::get('/admin/verifikasi/{id}', [VerifikasiController::class, 'show']);
+    Route::post('/admin/verifikasi/{id}/reject', [VerifikasiController::class, 'reject']);
+    Route::post('/admin/verifikasi/{id}/approve', [VerifikasiController::class, 'approve']);
+    // SURAT IZIN
+    Route::get('/surat-izin/{id}', function($id) {
+        return inertia('pemohon/surat-izin', [
+            'surat' => SuratIzin::findOrFail($id)
+        ]);
+    })->name('surat.izin');
+    Route::get('/admin/laporan', [LaporanController::class, 'index']);
+
+    
+});
+
 
 });
 

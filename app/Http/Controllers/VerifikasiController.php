@@ -1,0 +1,163 @@
+<?php
+
+namespace App\Http\Controllers;
+
+
+use Carbon\Carbon;
+use App\Models\SuratIzin;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\Request as RequestModel;
+use Illuminate\Support\Facades\Storage;
+
+class VerifikasiController extends Controller
+{
+    public function index()
+    {
+        $antrian = RequestModel::where('status', 'Menunggu Verifikasi')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function($item){
+                return [
+                    'id' => $item->id,
+                    'no_registrasi' => $item->register_number,
+                    'pemohon' => $item->user->name,
+                    'jenis_izin' => $item->typeRequest->nama_izin,
+                    'tanggal_masuk' => $item->created_at->format('d M Y'),
+                ];
+            });
+
+        return inertia('admin/verifikasi-list', [
+            'antrian' => $antrian
+        ]);
+    }
+
+     public function show($id)
+    {
+        // Ambil request/pengajuan + relasi user + relasi detail + dokumen
+        $req = RequestModel::with([
+            'user',
+            'detailRequests',
+            'documents',
+            'typeRequest'
+        ])->findOrFail($id);
+
+        // MAPPING DATA KE FRONTEND
+        $data = [
+            'id'      => $req->id,
+            'reg'     => $req->register_number,
+            'jenis'   => $req->typeRequest->nama_izin,
+
+            // DATA PEMOHON
+            'pemohon' => [
+                'nama'   => $req->user->name,
+                'nik'    => $req->user->identity_number,
+                'alamat' => $req->user->address,
+                'telp'   => $req->user->phone,
+            ],
+
+            // DETAIL REQUEST → array isi field_name & field_value
+            'detail_requests' => $req->detailRequests->map(function ($d) {
+                return [
+                    'field_name'  => $d->field_name,
+                    'field_value' => $d->field_value,
+                ];
+            }),
+
+            // DOKUMEN → file persyaratan
+            'dokumen' => $req->documents->map(function ($d) {
+                return [
+                    'nama_dokumen' => $d->nama_dokumen,
+                    'path_dokumen' => $d->path_dokumen,
+                ];
+            }),
+        ];
+
+        // KIRIM KE FRONTEND
+        return inertia('admin/verifikasi-detail', [
+            'data' => $data
+        ]);
+    }
+    public function reject(Request $request, $id)
+    {
+        $req = RequestModel::with('detailRequests', 'documents')->findOrFail($id);
+
+        // VALIDASI
+        $request->validate([
+            'alasan' => 'required|string|max:500',
+        ]);
+
+        // UPDATE STATUS & CATATAN
+        $req->update([
+            'status'  => 'Ditolak',
+            'catatan' => $request->alasan,
+        ]);
+
+        // SIMPAN RIWAYAT (opsional, jika ada tabel riwayat)
+        if (method_exists($req, 'riwayat')) {
+            $req->riwayat()->create([
+                'status'  => 'Ditolak',
+                'ket'     => $request->alasan,
+                'tanggal' => now()->format('d M Y'),
+            ]);
+        }
+
+        // OUTPUT NOTIFIKASI
+        return redirect()
+            ->back()
+            ->with('success', 'Pengajuan berhasil ditolak dan pemohon telah diberi catatan.');
+    }
+
+    public function approve($id)
+    {
+        $req = RequestModel::with(['user', 'typeRequest', 'detailRequests'])
+            ->findOrFail($id);
+
+        // Generate nomor surat
+        $nomorSurat = "551.2/" . rand(100,999) . "/DISHUB/" . date('Y');
+
+        // Data untuk PDF
+        $dataSurat = [
+            'nomor' => $nomorSurat,
+            'judul' => "SURAT IZIN " . strtoupper($req->typeRequest->nama_izin),
+            'nama'  => $req->user->name,
+            'usaha' => $req->user->role === 'perusahaan' ? $req->user->name : '-',
+            'objek' => [
+                'label' => 'Keterangan',
+                'value' => $req->detailRequests->pluck('field_value')->implode(', ')
+            ],
+            'detail' => $req->detailRequests->map(fn($x) => $x->field_name . ": " . $x->field_value)->implode(', '),
+            'tanggal' => now()->format('d F Y'),
+        ];
+
+        // Generate PDF
+        $pdf = Pdf::loadView('pdf.surat-izin', ['surat' => $dataSurat]);
+        
+        // Simpan PDF
+        $fileName = 'surat_izin_' . Str::random(10) . '.pdf';
+        $pdfPath = 'surat_izin/' . $fileName;
+        Storage::disk('public')->put($pdfPath, $pdf->output());
+
+        // Simpan data surat ke database
+        SuratIzin::create([
+            'request_id' => $req->id,
+            'user_id'    => $req->user_id,
+            'nomor_surat' => $nomorSurat,
+            'judul' => $dataSurat['judul'],
+            'tanggal_terbit' => Carbon::now(),
+            'tanggal_kadaluwarsa' => Carbon::now()->addYears(5),
+            'lokasi_file' => $pdfPath,
+        ]);
+
+        // Update status request
+        $req->update([
+            'status' => 'Disetujui',
+            'catatan' => 'Surat Izin telah diterbitkan'
+        ]);
+
+        return redirect()->route('verifikasi.list', $req->id)
+            ->with('success', 'Surat izin berhasil diterbitkan!');
+    }
+
+}
