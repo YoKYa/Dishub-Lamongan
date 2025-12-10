@@ -181,5 +181,30 @@ class RequestController extends Controller
             ],
         ]);
     }
+    public function cekPermohonan($reg)
+    {
+        $data = \App\Models\Request::with(['user', 'typeRequest'])
+            ->where('register_number', $reg)
+            ->first();
+
+        if (!$data) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Data tidak ditemukan.'
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => true,
+            'result' => [
+                'no_registrasi' => $data->register_number,
+                'pemohon'       => $data->user->name,
+                'jenis'         => $data->typeRequest->nama_izin,
+                'tanggal'       => $data->created_at->format('d M Y'),
+                'status'        => $data->status,
+                'pesan'         => $data->catatan ?? '-'
+            ]
+        ]);
+    }
 
 }

@@ -61,38 +61,42 @@ export default function CekPermohonan() {
     ];
 
     // Fungsi Cari Data
-    const handleCekStatus = (e: { preventDefault: () => void; }) => {
+    const handleCekStatus = async (e: any) => {
         e.preventDefault();
 
-        // Reset state
         setResult(null);
         setError('');
         setLoading(true);
 
-        if (!regNumber) {
+        if (!regNumber.trim()) {
             setError('Mohon masukkan nomor registrasi terlebih dahulu.');
             setLoading(false);
             return;
         }
 
-        // Simulasi delay network 1.5 detik
-        setTimeout(() => {
-            // Cari data di array dummy (Case Insensitive)
-            const foundData = mockDatabase.find(
-                (item) =>
-                    item.no_registrasi.toLowerCase() ===
-                    regNumber.toLowerCase(),
-            );
+        try {
+            const response = await fetch(`/cek-permohonan/api/${regNumber}`);
 
-            if (foundData) {
-                setResult(foundData);
-            } else {
+            if (!response.ok) {
                 setError(
                     'Data tidak ditemukan. Periksa kembali nomor registrasi Anda.',
                 );
+                setLoading(false);
+                return;
             }
-            setLoading(false);
-        }, 1500);
+
+            const data = await response.json();
+
+            if (data.status) {
+                setResult(data.result);
+            } else {
+                setError(data.message || 'Data tidak ditemukan.');
+            }
+        } catch (err) {
+            setError('Terjadi kesalahan pada server. Coba beberapa saat lagi.');
+        }
+
+        setLoading(false);
     };
 
     // Helper Warna Status

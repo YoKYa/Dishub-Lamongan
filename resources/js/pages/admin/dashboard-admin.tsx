@@ -44,8 +44,16 @@ export default function DashboardAdmin() {
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem('user');
-        router.visit('/admin-login');
+        router.post(
+            '/admin/logout',
+            {},
+            {
+                onFinish: () => {
+                    localStorage.removeItem('user');
+                    router.visit('/login');
+                },
+            },
+        );
     };
 
     const { props } = usePage();
@@ -74,7 +82,10 @@ export default function DashboardAdmin() {
                     position: isMobile ? 'absolute' : 'relative',
                 }}
             >
-                <div style={{ width: '280px' }} className="d-flex flex-column h-100">
+                <div
+                    style={{ width: '280px' }}
+                    className="d-flex flex-column h-100"
+                >
                     <div className="d-flex align-items-center gap-2 mb-4 px-4 pt-4">
                         <div
                             className="bg-primary rounded-circle d-flex align-items-center justify-content-center fw-bold text-white flex-shrink-0"
@@ -83,10 +94,16 @@ export default function DashboardAdmin() {
                             D
                         </div>
                         <div>
-                            <div className="fw-bold" style={{ lineHeight: '1.2' }}>
+                            <div
+                                className="fw-bold"
+                                style={{ lineHeight: '1.2' }}
+                            >
                                 DISHUB
                             </div>
-                            <div className="small text-white-50" style={{ fontSize: '0.75rem' }}>
+                            <div
+                                className="small text-white-50"
+                                style={{ fontSize: '0.75rem' }}
+                            >
                                 Admin Panel
                             </div>
                         </div>
@@ -153,7 +170,10 @@ export default function DashboardAdmin() {
                 className="d-flex flex-column h-100 flex-grow-1"
                 style={{ overflowY: 'auto', overflowX: 'hidden', minWidth: 0 }}
             >
-                <Navbar bg="white" className="shadow-sm px-4 py-3 sticky-top d-flex justify-content-between">
+                <Navbar
+                    bg="white"
+                    className="shadow-sm px-4 py-3 sticky-top d-flex justify-content-between"
+                >
                     <div className="d-flex align-items-center gap-3">
                         <Button
                             variant="light"
@@ -163,13 +183,25 @@ export default function DashboardAdmin() {
                         >
                             <FaBars size={20} />
                         </Button>
-                        <h5 className="mb-0 fw-bold text-dark d-none d-md-block">Dashboard Overview</h5>
+                        <h5 className="mb-0 fw-bold text-dark d-none d-md-block">
+                            Dashboard Overview
+                        </h5>
                     </div>
 
-                    <div className="d-flex align-items-center gap-3" style={{ cursor: 'default' }}>
+                    <div
+                        className="d-flex align-items-center gap-3"
+                        style={{ cursor: 'default' }}
+                    >
                         <div className="d-none d-sm-block text-end">
-                            <div className="fw-bold text-dark small">Administrator</div>
-                            <div className="text-muted" style={{ fontSize: '0.7rem' }}>Super Admin</div>
+                            <div className="fw-bold text-dark small">
+                                Administrator
+                            </div>
+                            <div
+                                className="text-muted"
+                                style={{ fontSize: '0.7rem' }}
+                            >
+                                Super Admin
+                            </div>
                         </div>
                         <div
                             className="bg-secondary rounded-circle d-flex align-items-center justify-content-center text-white"
@@ -181,7 +213,6 @@ export default function DashboardAdmin() {
                 </Navbar>
 
                 <Container fluid className="p-4">
-
                     {/* Kartu Statistik */}
                     <Row className="g-4 mb-4">
                         <Col xs={12} sm={6} xl={3}>
@@ -251,7 +282,7 @@ export default function DashboardAdmin() {
 
                     {/* Tabel Pengajuan Terbaru */}
                     <Card className="shadow-sm rounded-4 border-0">
-                        <Card.Header className="bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <Card.Header className="bg-white py-3 d-flex justify-content-between align-items-center gap-2 flex-wrap">
                             <h6 className="fw-bold m-0 text-dark">
                                 Pengajuan Terbaru Perlu Verifikasi
                             </h6>
@@ -259,7 +290,9 @@ export default function DashboardAdmin() {
                                 variant="link"
                                 size="sm"
                                 className="text-decoration-none fw-bold p-0"
-                                onClick={() => router.visit('/admin/verifikasi')}
+                                onClick={() =>
+                                    router.visit('/admin/verifikasi')
+                                }
                             >
                                 Lihat Semua <FaArrowRight className="ms-1" />
                             </Button>
@@ -267,42 +300,66 @@ export default function DashboardAdmin() {
 
                         <Card.Body className="p-0">
                             <div className="table-responsive">
-                                <Table hover className="mb-0 align-middle" style={{ minWidth: '600px' }}>
+                                <Table
+                                    hover
+                                    className="mb-0 align-middle"
+                                    style={{ minWidth: '600px' }}
+                                >
                                     <thead className="bg-light text-secondary small text-uppercase">
                                         <tr>
-                                            <th className="ps-4 py-3">No. Registrasi</th>
+                                            <th className="ps-4 py-3">
+                                                No. Registrasi
+                                            </th>
                                             <th className="py-3">Pemohon</th>
                                             <th className="py-3">Layanan</th>
-                                            <th className="py-3 text-center">Tanggal</th>
-                                            <th className="py-3 pe-4 text-end">Aksi</th>
+                                            <th className="py-3 text-center">
+                                                Tanggal
+                                            </th>
+                                            <th className="py-3 pe-4 text-end">
+                                                Aksi
+                                            </th>
                                         </tr>
                                     </thead>
 
                                     <tbody>
                                         {recentVerifications.map((item) => (
                                             <tr key={item.id}>
-                                                <td className="ps-4 fw-bold text-primary">{item.reg}</td>
-                                                <td className="fw-semibold">{item.pemohon}</td>
+                                                <td className="ps-4 fw-bold text-primary">
+                                                    {item.reg}
+                                                </td>
+                                                <td className="fw-semibold">
+                                                    {item.pemohon}
+                                                </td>
                                                 <td>
-                                                    <Badge bg="light" text="dark" className="border">
+                                                    <Badge
+                                                        bg="light"
+                                                        text="dark"
+                                                        className="border"
+                                                    >
                                                         {item.jenis}
                                                     </Badge>
                                                 </td>
-                                                <td className="text-muted small text-center">{item.tgl}</td>
+                                                <td className="text-muted small text-center">
+                                                    {item.tgl}
+                                                </td>
                                                 <td className="pe-4 text-end">
                                                     <Button
                                                         variant="outline-primary"
                                                         size="sm"
                                                         className="rounded-pill px-3"
-                                                        onClick={() => router.visit(`/admin/verifikasi/${item.id}`)}
+                                                        onClick={() =>
+                                                            router.visit(
+                                                                `/admin/verifikasi/${item.id}`,
+                                                            )
+                                                        }
                                                     >
-                                                        <FaEye className="me-1" /> Cek
+                                                        <FaEye className="me-1" />{' '}
+                                                        Cek
                                                     </Button>
                                                 </td>
                                             </tr>
                                         ))}
                                     </tbody>
-
                                 </Table>
                             </div>
                         </Card.Body>

@@ -114,50 +114,72 @@ class VerifikasiController extends Controller
         $req = RequestModel::with(['user', 'typeRequest', 'detailRequests'])
             ->findOrFail($id);
 
-        // Generate nomor surat
+        // Nomor Surat
         $nomorSurat = "551.2/" . rand(100,999) . "/DISHUB/" . date('Y');
 
-        // Data untuk PDF
+        // Ambil semua detail field_name & field_value
+        $detailList = $req->detailRequests->map(function ($d) {
+            return [
+                'name' => $d->field_name,
+                'value' => $d->field_value,
+            ];
+        });
+
+        // Ambil field pertama untuk objek (default)
+        $firstField = $detailList->first();
+
+        // Data PDF
         $dataSurat = [
-            'nomor' => $nomorSurat,
-            'judul' => "SURAT IZIN " . strtoupper($req->typeRequest->nama_izin),
-            'nama'  => $req->user->name,
-            'usaha' => $req->user->role === 'perusahaan' ? $req->user->name : '-',
+            'nomor'  => $nomorSurat,
+            'judul'  => "SURAT IZIN " . strtoupper($req->typeRequest->nama_izin),
+
+            'nama'   => $req->user->name,
+            'usaha'  => $req->user->role === 'perusahaan'
+                ? $req->user->name
+                : '-',
+
+            // === Objek Utama — pakai field pertama ===
             'objek' => [
-                'label' => 'Keterangan',
-                'value' => $req->detailRequests->pluck('field_value')->implode(', ')
+                'label' => $firstField['name'] ?? 'Keterangan',
+                'value' => $firstField['value'] ?? '-',
             ],
-            'detail' => $req->detailRequests->map(fn($x) => $x->field_name . ": " . $x->field_value)->implode(', '),
+
+            // === Detail lengkap — semua field_name + field_value ===
+            'detail' => $detailList->toArray(),
+
+
             'tanggal' => now()->format('d F Y'),
         ];
 
         // Generate PDF
         $pdf = Pdf::loadView('pdf.surat-izin', ['surat' => $dataSurat]);
-        
+
         // Simpan PDF
         $fileName = 'surat_izin_' . Str::random(10) . '.pdf';
         $pdfPath = 'surat_izin/' . $fileName;
         Storage::disk('public')->put($pdfPath, $pdf->output());
 
-        // Simpan data surat ke database
+        // Simpan Surat
         SuratIzin::create([
             'request_id' => $req->id,
             'user_id'    => $req->user_id,
             'nomor_surat' => $nomorSurat,
             'judul' => $dataSurat['judul'],
-            'tanggal_terbit' => Carbon::now(),
-            'tanggal_kadaluwarsa' => Carbon::now()->addYears(5),
+            'tanggal_terbit' => now(),
+            'tanggal_kadaluwarsa' => now()->addYears(5),
             'lokasi_file' => $pdfPath,
         ]);
 
-        // Update status request
+        // Update pengajuan
         $req->update([
             'status' => 'Disetujui',
             'catatan' => 'Surat Izin telah diterbitkan'
         ]);
 
-        return redirect()->route('verifikasi.list', $req->id)
+        return redirect()
+            ->route('verifikasi.list')
             ->with('success', 'Surat izin berhasil diterbitkan!');
     }
+
 
 }

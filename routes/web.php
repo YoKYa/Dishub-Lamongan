@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DraftController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\SuratIzinController;
 use App\Http\Controllers\VerifikasiController;
 use App\Http\Controllers\DashboardAdminController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\{RequestController, ProfileController};
 
 Route::inertia('/', 'public/welcome')->name('home');
 Route::inertia('alur-perizinan', 'public/alur-perizinan')->name('alur-perizinan');
+Route::get('/cek-permohonan/api/{reg}', [RequestController::class, 'cekPermohonan']);
 Route::inertia('cek-permohonan', 'public/cek-permohonan')->name('cek-permohonan');
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -40,19 +42,44 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::middleware(['role:admin'])->group(function () {
 
-    Route::get('admin', [DashboardAdminController::class, 'index']);
+    
 
-    Route::get('/admin/verifikasi', [VerifikasiController::class, 'index'])->name('verifikasi.list');
-    Route::get('/admin/verifikasi/{id}', [VerifikasiController::class, 'show']);
-    Route::post('/admin/verifikasi/{id}/reject', [VerifikasiController::class, 'reject']);
-    Route::post('/admin/verifikasi/{id}/approve', [VerifikasiController::class, 'approve']);
+   
     // SURAT IZIN
     Route::get('/surat-izin/{id}', function($id) {
         return inertia('pemohon/surat-izin', [
             'surat' => SuratIzin::findOrFail($id)
         ]);
     })->name('surat.izin');
-    Route::get('/admin/laporan', [LaporanController::class, 'index']);
+
+
+    Route::prefix('admin')->group(function() {
+        Route::get('/', [DashboardAdminController::class, 'index']);
+        Route::get('verifikasi', [VerifikasiController::class, 'index'])->name('verifikasi.list');
+        Route::get('verifikasi/{id}', [VerifikasiController::class, 'show']);
+        Route::post('verifikasi/{id}/reject', [VerifikasiController::class, 'reject']);
+        Route::post('verifikasi/{id}/approve', [VerifikasiController::class, 'approve']);
+        Route::get('laporan', [LaporanController::class, 'index']);
+
+        // User Management
+        Route::get('/users', [AdminUserController::class, 'index']);
+        Route::post('/users', [AdminUserController::class, 'store']);
+        Route::put('/users/{id}', [AdminUserController::class, 'update']);
+        Route::delete('/users/{id}', [AdminUserController::class, 'destroy']);
+
+        Route::post('logout', function () {
+            session()->invalidate();
+            session()->regenerateToken();
+            auth()->logout();
+            return redirect('/login');
+        });
+
+    });
+
+
+    // Ekspor PDF / Excel
+    Route::get('/admin/laporan/export/{format}', [LaporanController::class, 'export']);
+
 
     
 });

@@ -47,7 +47,7 @@ export default function SuratIzin() {
                     </Button>
                 </div>
 
-                {/* KERTAS A4 */}
+                {/* AREA SURAT */}
                 <Card
                     className="shadow-lg border-0 mx-auto"
                     style={{
@@ -59,19 +59,16 @@ export default function SuratIzin() {
                 >
                     <Card.Body className="p-0 text-black" style={{ fontSize: '1rem' }}>
 
-                        {/* KOP SURAT */}
+                        {/* KOP */}
                         <div className="text-center mb-4">
                             <h5 className="fw-bold text-uppercase mb-1">Pemerintah Kabupaten Lamongan</h5>
                             <h4 className="fw-bold text-uppercase">Dinas Perhubungan</h4>
 
-                            {/* Garis Kop Surat */}
-                            <div
-                                style={{
-                                    borderBottom: '4px double black',
-                                    width: '100%',
-                                    marginTop: '10px'
-                                }}
-                            ></div>
+                            <div style={{
+                                borderBottom: '4px double black',
+                                width: '100%',
+                                marginTop: '10px'
+                            }} />
                         </div>
 
                         {/* JUDUL */}
@@ -82,30 +79,16 @@ export default function SuratIzin() {
                             <p className="fw-bold">Nomor: {surat.nomor}</p>
                         </div>
 
-                        {/* ISI SURAT */}
+                        {/* ISI */}
                         <div style={{ fontSize: '1.05rem', lineHeight: '1.6' }}>
                             <p>
                                 Kepala Dinas Perhubungan Kabupaten Lamongan dengan ini memberikan izin kepada:
                             </p>
 
                             <div className="ps-3 mb-4">
-                                <Row>
-                                    <Col xs={4}>Nama</Col>
-                                    <Col xs={1}>:</Col>
-                                    <Col xs={7}>{surat.nama}</Col>
-                                </Row>
-
-                                <Row>
-                                    <Col xs={4}>Perusahaan</Col>
-                                    <Col xs={1}>:</Col>
-                                    <Col xs={7}>{surat.usaha || '-'}</Col>
-                                </Row>
-
-                                <Row>
-                                    <Col xs={4}>{surat.objek?.label || 'Objek'}</Col>
-                                    <Col xs={1}>:</Col>
-                                    <Col xs={7}>{surat.objek?.value || '-'}</Col>
-                                </Row>
+                                <Row><Col xs={4}>Nama</Col><Col xs={1}>:</Col><Col xs={7}>{surat.nama}</Col></Row>
+                                <Row><Col xs={4}>Perusahaan</Col><Col xs={1}>:</Col><Col xs={7}>{surat.usaha || '-'}</Col></Row>
+                                <Row><Col xs={4}>{surat.objek?.label || 'Objek'}</Col><Col xs={1}>:</Col><Col xs={7}>{surat.objek?.value || '-'}</Col></Row>
                             </div>
 
                             <p className="fw-bold mb-2">Keterangan Teknis:</p>
@@ -118,9 +101,8 @@ export default function SuratIzin() {
                             </p>
                         </div>
 
-                        {/* TANDA TANGAN */}
+                        {/* TTD */}
                         <Row className="mt-5 pt-4">
-                            {/* QR CODE */}
                             <Col xs={6} className="text-center">
                                 <FaQrcode size={90} />
                                 <p className="small text-muted mt-2">
@@ -128,7 +110,6 @@ export default function SuratIzin() {
                                 </p>
                             </Col>
 
-                            {/* TTD */}
                             <Col xs={6} className="text-center">
                                 <p>Ditetapkan di Lamongan</p>
                                 <p>Pada tanggal: {surat.tanggal}</p>
@@ -142,7 +123,6 @@ export default function SuratIzin() {
                                 <p>NIP. 19700101 199003 1 001</p>
                             </Col>
                         </Row>
-
                     </Card.Body>
                 </Card>
 
